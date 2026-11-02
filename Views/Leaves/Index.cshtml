@@ -1,0 +1,460 @@
+﻿@model IEnumerable<EmployeeManagementSystem.Models.Leave>
+
+@{
+    ViewData["Title"] = "Leave Management";
+}
+
+<div class="container-fluid py-4">
+
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+            <h2 class="fw-bold mb-1">
+                Leave Management
+            </h2>
+
+            @if (User.IsInRole("Employee"))
+            {
+                <p class="text-muted mb-0">
+                    View and manage your leave applications
+                </p>
+            }
+            else
+            {
+                <p class="text-muted mb-0">
+                    Review employee leave requests
+                </p>
+            }
+        </div>
+
+
+        <!-- Apply Leave - Employee Only -->
+        @if (User.IsInRole("Employee"))
+        {
+            <a asp-action="Create"
+               class="btn btn-primary">
+
+                <i class="bi bi-plus-lg me-1"></i>
+                Apply Leave
+
+            </a>
+        }
+
+    </div>
+
+
+    <!-- =====================================================
+         SUCCESS MESSAGE
+    ====================================================== -->
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show">
+
+            <i class="bi bi-check-circle me-2"></i>
+
+            @TempData["Success"]
+
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert">
+            </button>
+
+        </div>
+    }
+
+
+    <!-- =====================================================
+         ERROR MESSAGE
+    ====================================================== -->
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show">
+
+            <i class="bi bi-exclamation-circle me-2"></i>
+
+            @TempData["Error"]
+
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert">
+            </button>
+
+        </div>
+    }
+
+
+    <!-- =====================================================
+         LEAVE TABLE CARD
+    ====================================================== -->
+
+    <div class="card border-0 shadow-sm">
+
+        <div class="card-body p-0">
+
+            <div class="table-responsive">
+
+                <table class="table table-hover align-middle mb-0">
+
+                    <!-- =================================================
+                         TABLE HEADER
+                    ================================================== -->
+
+                    <thead class="table-light">
+
+                        <tr>
+
+                            @if (!User.IsInRole("Employee"))
+                            {
+                                <th>Employee</th>
+                            }
+
+                            <th>Leave Type</th>
+
+                            <th>From Date</th>
+
+                            <th>To Date</th>
+
+                            <th>Reason</th>
+
+                            <th>Status</th>
+
+                            @if (User.IsInRole("Employee"))
+                            {
+                                <th class="text-end">
+                                    Action
+                                </th>
+                            }
+
+                            @if (User.IsInRole("Admin") ||
+                            User.IsInRole("HR") ||
+                            User.IsInRole("Manager"))
+                            {
+                                <th class="text-end">
+                                    Action
+                                </th>
+                            }
+
+                        </tr>
+
+                    </thead>
+
+
+                    <!-- =================================================
+                         TABLE BODY
+                    ================================================== -->
+
+                    <tbody>
+
+                        @if (Model != null && Model.Any())
+                        {
+                            foreach (var leave in Model)
+                            {
+                                <tr>
+
+                                    <!-- Employee -->
+                                    @if (!User.IsInRole("Employee"))
+                                    {
+                                        <td>
+
+                                            <div class="fw-semibold">
+
+                                                @leave.Employee?.FirstName
+                                                @leave.Employee?.LastName
+
+                                            </div>
+
+                                            <small class="text-muted">
+
+                                                @leave.Employee?.Email
+
+                                            </small>
+
+                                        </td>
+                                    }
+
+
+                                    <!-- Leave Type -->
+                                    <td>
+                                        @leave.LeaveType
+                                    </td>
+
+
+                                    <!-- From Date -->
+                                    <td>
+                                        @leave.FromDate.ToString("dd MMM yyyy")
+                                    </td>
+
+
+                                    <!-- To Date -->
+                                    <td>
+                                        @leave.ToDate.ToString("dd MMM yyyy")
+                                    </td>
+
+
+                                    <!-- Reason -->
+                                    <td>
+                                        @leave.Reason
+                                    </td>
+
+
+                                    <!-- Status -->
+                                    <td>
+
+                                        @if (leave.Status == "Pending")
+                                        {
+                                            <span class="badge bg-warning text-dark">
+                                                Pending
+                                            </span>
+                                        }
+                                        else if (leave.Status == "Approved")
+                                        {
+                                            <span class="badge bg-success">
+                                                Approved
+                                            </span>
+                                        }
+                                        else if (leave.Status == "Rejected")
+                                        {
+                                            <span class="badge bg-danger">
+                                                Rejected
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">
+                                                @leave.Status
+                                            </span>
+                                        }
+
+                                    </td>
+
+
+                                    <!-- =================================================
+                                         EMPLOYEE ACTIONS
+                                    ================================================== -->
+                                    @if (User.IsInRole("Employee"))
+                                    {
+                                        <td class="text-end">
+
+                                            @if (leave.Status == "Pending")
+                                            {
+                                                <a asp-action="Edit"
+                                                   asp-route-id="@leave.Id"
+                                                   class="btn btn-sm btn-outline-primary me-1">
+
+                                                    <i class="bi bi-pencil"></i>
+
+                                                </a>
+
+
+                                                <a asp-action="Delete"
+                                                   asp-route-id="@leave.Id"
+                                                   class="btn btn-sm btn-outline-danger">
+
+                                                    <i class="bi bi-trash"></i>
+
+                                                </a>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted small">
+                                                    No action
+                                                </span>
+                                            }
+
+                                        </td>
+                                    }
+
+
+                                    <!-- =================================================
+                                         ADMIN / HR / MANAGER ACTIONS
+                                    ================================================== -->
+                                    @if (User.IsInRole("Admin") ||
+                                   User.IsInRole("HR") ||
+                                   User.IsInRole("Manager"))
+                                    {
+                                        <td class="text-end">
+
+                                            @if (leave.Status == "Pending")
+                                            {
+                                                <!-- Approve -->
+
+                                                <form asp-action="Approve"
+                                                      asp-route-id="@leave.Id"
+                                                      method="post"
+                                                      class="d-inline">
+
+                                                    @Html.AntiForgeryToken()
+
+                                                    <button type="submit"
+                                                            class="btn btn-sm btn-success me-1">
+
+                                                        <i class="bi bi-check-lg"></i>
+                                                        Approve
+
+                                                    </button>
+
+                                                </form>
+
+
+                                                <!-- Reject -->
+
+                                                <form asp-action="Reject"
+                                                      asp-route-id="@leave.Id"
+                                                      method="post"
+                                                      class="d-inline">
+
+                                                    @Html.AntiForgeryToken()
+
+                                                    <button type="submit"
+                                                            class="btn btn-sm btn-danger">
+
+                                                        <i class="bi bi-x-lg"></i>
+                                                        Reject
+
+                                                    </button>
+
+                                                </form>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted small">
+                                                    Processed
+                                                </span>
+                                            }
+
+                                        </td>
+                                    }
+
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <!-- No Records -->
+
+                            <tr>
+
+                                <td colspan="7"
+                                    class="text-center py-5">
+
+                                    <div class="text-muted">
+
+                                        <i class="bi bi-calendar-x fs-1 d-block mb-3"></i>
+
+                                        <h6 class="fw-semibold">
+                                            No leave records found
+                                        </h6>
+
+
+                                        @if (User.IsInRole("Employee"))
+                                        {
+                                            <p class="mb-0">
+                                                You have not applied for any leave yet.
+                                            </p>
+                                        }
+                                        else
+                                        {
+                                            <p class="mb-0">
+                                                There are no leave requests to review.
+                                            </p>
+                                        }
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+
+                @if (ViewBag.TotalPages > 1)
+                {
+                    <div class="d-flex justify-content-between align-items-center px-3 py-3 border-top">
+
+                        <div class="text-muted small">
+                            Showing page
+                            <strong>@ViewBag.CurrentPage</strong>
+                            of
+                            <strong>@ViewBag.TotalPages</strong>
+
+                            <span class="ms-2">
+                                (@ViewBag.TotalRecords total records)
+                            </span>
+                        </div>
+
+                        <nav aria-label="Leave Pagination">
+
+                            <ul class="pagination mb-0">
+
+                                @if (ViewBag.TotalPages > 1)
+                                {
+                                    <nav>
+                                        <ul class="pagination justify-content-center">
+
+                                            <!-- Previous -->
+                                            <li class="page-item @(ViewBag.CurrentPage == 1 ? "disabled" : "")">
+                                                <a class="page-link"
+                                                   href="/Leaves/Index?page=@(ViewBag.CurrentPage - 1)">
+                                                    Previous
+                                                </a>
+                                            </li>
+
+                                            <!-- Page Numbers -->
+                                            @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                                            {
+                                                <li class="page-item @(ViewBag.CurrentPage == i ? "active" : "")">
+                                                    <a class="page-link"
+                                                       href="/Leaves/Index?page=@i">
+                                                        @i
+                                                    </a>
+                                                </li>
+                                            }
+
+                                            <!-- Next -->
+                                            <li class="page-item @(ViewBag.CurrentPage == ViewBag.TotalPages ? "disabled" : "")">
+                                                <a class="page-link"
+                                                   href="/Leaves/Index?page=@(ViewBag.CurrentPage + 1)">
+                                                    Next
+                                                </a>
+                                            </li>
+
+                                        </ul>
+                                    </nav>
+                                }
+
+
+                                else
+                                {
+                                    <li class="page-item disabled">
+
+                                        <span class="page-link">
+
+                                            Next
+                                            <i class="bi bi-chevron-right ms-1"></i>
+
+                                        </span>
+
+                                    </li>
+                                }
+
+                            </ul>
+
+                        </nav>
+
+                    </div>
+                }
+               
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

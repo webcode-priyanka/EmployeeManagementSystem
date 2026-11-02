@@ -1,0 +1,361 @@
+﻿@model IEnumerable<EmployeeManagementSystem.Models.Salary>
+
+@{
+    ViewData["Title"] = "Salary Management";
+}
+
+<div class="container-fluid py-4">
+
+    <!-- =========================
+         PAGE HEADER
+         ========================= -->
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+            <h2 class="fw-bold mb-1">
+                @if (User.IsInRole("Employee"))
+                {
+                    <span>My Salary</span>
+                }
+                else
+                {
+                    <span>Salary Management</span>
+                }
+            </h2>
+
+            <p class="text-muted mb-0">
+                @if (User.IsInRole("Employee"))
+                {
+                    <span>View your salary information</span>
+                }
+                else
+                {
+                    <span>Manage employee salaries</span>
+                }
+            </p>
+        </div>
+
+        <!-- Add Salary: Admin & HR only -->
+        @if (User.IsInRole("Admin") || User.IsInRole("HR"))
+        {
+            <a asp-action="Create"
+               class="btn btn-primary">
+
+                <i class="bi bi-plus-lg me-1"></i>
+                Add Salary
+
+            </a>
+        }
+
+    </div>
+
+
+    <!-- =========================
+         SUCCESS MESSAGE
+         ========================= -->
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show"
+             role="alert">
+
+            <i class="bi bi-check-circle me-2"></i>
+
+            @TempData["Success"]
+
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert">
+            </button>
+
+        </div>
+    }
+
+
+    <!-- =========================
+         SALARY TABLE
+         ========================= -->
+
+    <div class="card border-0 shadow-sm">
+
+        <div class="card-body p-0">
+
+            <div class="table-responsive">
+
+                <table class="table table-hover align-middle mb-0">
+
+                    <thead class="table-light">
+
+                        <tr>
+
+                            <!-- Employee column only for Admin/HR -->
+                            @if (!User.IsInRole("Employee"))
+                            {
+                                <th class="ps-4">
+                                    Employee
+                                </th>
+                            }
+
+                            <th>
+                                Month
+                            </th>
+
+                            <th>
+                                Basic Salary
+                            </th>
+
+                            <th>
+                                Allowance
+                            </th>
+
+                            <th>
+                                Deduction
+                            </th>
+
+                            <th>
+                                Net Salary
+                            </th>
+
+                            <!-- Actions only for Admin/HR -->
+                            @if (User.IsInRole("Admin") ||
+                            User.IsInRole("HR"))
+                            {
+                                <th class="text-end pe-4">
+                                    Actions
+                                </th>
+                            }
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        @if (Model != null && Model.Any())
+                        {
+                            foreach (var salary in Model)
+                            {
+                                <tr>
+
+                                    <!-- Employee -->
+                                    @if (!User.IsInRole("Employee"))
+                                    {
+                                        <td class="ps-4">
+
+                                            <div class="fw-semibold">
+
+                                                @salary.Employee?.FirstName
+                                                @salary.Employee?.LastName
+
+                                            </div>
+
+                                            <small class="text-muted">
+
+                                                @salary.Employee?.Email
+
+                                            </small>
+
+                                        </td>
+                                    }
+
+
+                                    <!-- Month -->
+                                    <td>
+
+                                        @salary.Month.ToString("MMMM yyyy")
+
+                                    </td>
+
+
+                                    <!-- Basic Salary -->
+                                    <td>
+
+                                        ₹@salary.BasicSalary.ToString("N2")
+
+                                    </td>
+
+
+                                    <!-- Allowance -->
+                                    <td>
+
+                                        ₹@salary.Allowance.ToString("N2")
+
+                                    </td>
+
+
+                                    <!-- Deduction -->
+                                    <td>
+
+                                        ₹@salary.Deduction.ToString("N2")
+
+                                    </td>
+
+
+                                    <!-- Net Salary -->
+                                    <td>
+
+                                        <span class="fw-bold">
+
+                                            ₹@salary.NetSalary.ToString("N2")
+
+                                        </span>
+
+                                    </td>
+
+
+                                    <!-- Actions -->
+                                    @if (User.IsInRole("Admin") ||
+                                   User.IsInRole("HR"))
+                                    {
+                                        <td class="text-end pe-4">
+
+                                            <a asp-action="Edit"
+                                               asp-route-id="@salary.Id"
+                                               class="btn btn-sm btn-outline-primary me-1">
+
+                                                <i class="bi bi-pencil"></i>
+                                                Edit
+
+                                            </a>
+
+
+                                            <a asp-action="Delete"
+                                               asp-route-id="@salary.Id"
+                                               class="btn btn-sm btn-outline-danger">
+
+                                                <i class="bi bi-trash"></i>
+                                                Delete
+
+                                            </a>
+
+                                        </td>
+                                    }
+
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+
+                                <td colspan="7"
+                                    class="text-center py-5">
+
+                                    <div class="text-muted">
+
+                                        <i class="bi bi-cash-stack fs-1 d-block mb-3"></i>
+
+                                        <h6 class="fw-semibold">
+                                            No salary records found
+                                        </h6>
+
+                                        @if (User.IsInRole("Employee"))
+                                        {
+                                            <p class="mb-0">
+                                                Your salary information is not available yet.
+                                            </p>
+                                        }
+                                        else
+                                        {
+                                            <p class="mb-0">
+                                                No employee salary records have been added yet.
+                                            </p>
+                                        }
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+
+                
+                <!-- =========================
+                     PAGINATION
+                     ========================= -->
+                @if (ViewBag.TotalPages > 1)
+                {
+                    <div class="d-flex justify-content-between align-items-center px-3 py-3 border-top">
+
+                        <!-- Page Information -->
+                        <div class="text-muted small">
+                            Showing page
+                            <strong>@ViewBag.CurrentPage</strong>
+                            of
+                            <strong>@ViewBag.TotalPages</strong>
+
+                            <span class="ms-2">
+                                (@ViewBag.TotalRecords total records)
+                            </span>
+                        </div>
+
+
+                        <!-- Pagination -->
+                        <nav aria-label="Salary Pagination">
+
+                            <ul class="pagination mb-0">
+
+                                <!-- Previous -->
+                                <li class="page-item @(ViewBag.CurrentPage == 1 ? "disabled" : "")">
+
+                                    <a class="page-link"
+                                       href="/Salaries/Index?page=@(ViewBag.CurrentPage - 1)">
+
+                                        <i class="bi bi-chevron-left"></i>
+                                        Previous
+
+                                    </a>
+
+                                </li>
+
+
+                                <!-- Page Numbers -->
+                                @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                                {
+                                    <li class="page-item @(ViewBag.CurrentPage == i ? "active" : "")">
+
+                                        <a class="page-link"
+                                           href="/Salaries/Index?page=@i">
+
+                                            @i
+
+                                        </a>
+
+                                    </li>
+                                }
+
+
+                                <!-- Next -->
+                                <li class="page-item @(ViewBag.CurrentPage == ViewBag.TotalPages ? "disabled" : "")">
+
+                                    <a class="page-link"
+                                       href="/Salaries/Index?page=@(ViewBag.CurrentPage + 1)">
+
+                                        Next
+                                        <i class="bi bi-chevron-right"></i>
+
+                                    </a>
+
+                                </li>
+
+                            </ul>
+
+                        </nav>
+
+                    </div>
+                }
+                
+
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

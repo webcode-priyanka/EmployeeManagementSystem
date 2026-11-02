@@ -1,0 +1,81 @@
+﻿
+@model EmployeeManagementSystem.Models.Leave
+
+@{
+    ViewData["Title"] = "Delete Leave";
+}
+
+<div class="container-fluid py-4">
+
+    <div class="mb-4">
+        <h2 class="fw-bold mb-1">Delete Leave</h2>
+        <p class="text-muted mb-0">Confirm before deleting this leave request</p>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-4">
+
+            <div class="alert alert-warning">
+                Are you sure you want to delete this leave request?
+            </div>
+
+            <div class="row mb-4">
+
+                <div class="col-md-6 mb-3">
+                    <strong>Employee</strong>
+                    <div class="text-muted">
+                        @Model.Employee?.FirstName @Model.Employee?.LastName
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <strong>Leave Type</strong>
+                    <div class="text-muted">
+                        @Model.LeaveType
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <strong>From Date</strong>
+                    <div class="text-muted">
+                        @Model.FromDate.ToString("dd-MM-yyyy")
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <strong>To Date</strong>
+                    <div class="text-muted">
+                        @Model.ToDate.ToString("dd-MM-yyyy")
+                    </div>
+                </div>
+
+                <div class="col-12 mb-3">
+                    <strong>Reason</strong>
+                    <div class="text-muted">
+                        @Model.Reason
+                    </div>
+                </div>
+
+            </div>
+
+            <form asp-action="Delete" method="post">
+
+                <input type="hidden" asp-for="Id" />
+
+                <button type="submit"
+                        class="btn btn-danger px-4">
+                    Delete Leave
+                </button>
+
+                <a asp-action="Index"
+                   class="btn btn-outline-secondary px-4 ms-2">
+                    Cancel
+                </a>
+
+            </form>
+
+        </div>
+    </div>
+
+</div>
+

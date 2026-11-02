@@ -1,0 +1,893 @@
+﻿@model IEnumerable<EmployeeManagementSystem.Models.Attendance>
+
+@{
+    ViewData["Title"] = "Attendance";
+
+    bool isEmployee = User.IsInRole("Employee");
+
+    var employees = ViewBag.Employees as List<EmployeeManagementSystem.Models.Employee>
+        ?? new List<EmployeeManagementSystem.Models.Employee>();
+
+    int? selectedEmployeeId = ViewBag.SelectedEmployeeId as int?;
+
+    string selectedEmployeeName =
+        ViewBag.SelectedEmployeeName as string ?? "";
+
+    int selectedMonth = ViewBag.SelectedMonth ?? DateTime.Today.Month;
+    int selectedYear = ViewBag.SelectedYear ?? DateTime.Today.Year;
+
+    string monthName = ViewBag.MonthName ?? "";
+
+    int totalDays = ViewBag.TotalDays ?? 0;
+    int presentDays = ViewBag.PresentDays ?? 0;
+    int absentDays = ViewBag.AbsentDays ?? 0;
+    int checkedOutDays = ViewBag.CheckedOutDays ?? 0;
+
+    int currentPage = ViewBag.CurrentPage ?? 1;
+    int totalPages = ViewBag.TotalPages ?? 0;
+    int totalRecords = ViewBag.TotalRecords ?? 0;
+    int pageSize = ViewBag.PageSize ?? 10;
+
+    var attendanceList = Model?.ToList()
+        ?? new List<EmployeeManagementSystem.Models.Attendance>();
+
+    var todayAttendance = attendanceList.FirstOrDefault(a =>
+        a.Date.Date == DateTime.Today);
+
+    bool hasCheckedInToday =
+        todayAttendance != null &&
+        todayAttendance.CheckIn.HasValue;
+
+    bool hasCheckedOutToday =
+        todayAttendance != null &&
+        todayAttendance.CheckOut.HasValue;
+}
+
+
+<div class="container-fluid py-4">
+
+    <!-- PAGE HEADER -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+            <h2 class="fw-bold mb-1">
+                <i class="bi bi-calendar-check"></i>
+                Attendance
+            </h2>
+
+            <p class="text-muted mb-0">
+                Manage and view employee attendance
+            </p>
+        </div>
+
+    </div>
+
+
+    <!-- SUCCESS MESSAGE -->
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show"
+             role="alert">
+
+            <i class="bi bi-check-circle-fill me-2"></i>
+
+            @TempData["Success"]
+
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert">
+            </button>
+
+        </div>
+    }
+
+
+    <!-- ERROR MESSAGE -->
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show"
+             role="alert">
+
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+
+            @TempData["Error"]
+
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert">
+            </button>
+
+        </div>
+    }
+
+
+    <!-- EMPLOYEE CHECK IN / CHECK OUT -->
+    @if (isEmployee)
+    {
+        <div class="card shadow-sm border-0 mb-4">
+
+            <div class="card-body">
+
+                <div class="row align-items-center">
+
+                    <div class="col-md-7">
+
+                        <h5 class="fw-bold mb-1">
+                            <i class="bi bi-person-check me-2"></i>
+                            Mark Today's Attendance
+                        </h5>
+
+                        <p class="text-muted mb-2">
+                            @DateTime.Today.ToString("dddd, dd MMMM yyyy")
+                        </p>
+
+
+                        @if (hasCheckedInToday && !hasCheckedOutToday)
+                        {
+                            <span class="badge bg-success">
+                                <i class="bi bi-check-circle me-1"></i>
+                                Checked In
+                            </span>
+
+                            <span class="text-muted ms-2">
+                                @todayAttendance!.CheckIn.Value.ToString("hh:mm tt")
+                            </span>
+                        }
+                        else if (hasCheckedOutToday)
+                        {
+                            <span class="badge bg-primary">
+                                <i class="bi bi-check-circle me-1"></i>
+                                Attendance Completed
+                            </span>
+
+                            <span class="text-muted ms-2">
+                                @todayAttendance!.CheckIn.Value.ToString("hh:mm tt")
+                                -
+                                @todayAttendance!.CheckOut.Value.ToString("hh:mm tt")
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-warning text-dark">
+                                <i class="bi bi-clock me-1"></i>
+                                Not Checked In
+                            </span>
+                        }
+
+                    </div>
+
+
+                    <div class="col-md-5 text-md-end mt-3 mt-md-0">
+
+                        @if (!hasCheckedInToday)
+                        {
+                            <form asp-action="CheckIn"
+                                  method="post"
+                                  class="d-inline">
+
+                                @Html.AntiForgeryToken()
+
+                                <button type="submit"
+                                        class="btn btn-success px-4">
+
+                                    <i class="bi bi-box-arrow-in-right me-1"></i>
+                                    Check In
+
+                                </button>
+
+                            </form>
+                        }
+                        else if (!hasCheckedOutToday)
+                        {
+                            <form asp-action="CheckOut"
+                                  method="post"
+                                  class="d-inline">
+
+                                @Html.AntiForgeryToken()
+
+                                <button type="submit"
+                                        class="btn btn-danger px-4">
+
+                                    <i class="bi bi-box-arrow-right me-1"></i>
+                                    Check Out
+
+                                </button>
+
+                            </form>
+                        }
+                        else
+                        {
+                            <button type="button"
+                                    class="btn btn-secondary px-4"
+                                    disabled>
+
+                                <i class="bi bi-check-circle me-1"></i>
+                                Completed
+
+                            </button>
+                        }
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    }
+
+
+    <!-- FILTER -->
+    <div class="card shadow-sm border-0 mb-4">
+
+        <div class="card-header bg-white py-3">
+
+            <h5 class="fw-bold mb-0">
+                <i class="bi bi-funnel me-2"></i>
+                Attendance Filter
+            </h5>
+
+        </div>
+
+
+        <div class="card-body">
+
+            <form asp-action="Index"
+                  method="get">
+
+                <div class="row g-3 align-items-end">
+
+
+                    <!-- EMPLOYEE -->
+                    @if (!isEmployee)
+                    {
+                        <div class="col-md-5">
+
+                            <label class="form-label fw-semibold">
+                                Employee
+                            </label>
+
+                            <select name="employeeId"
+                                    class="form-select">
+
+                                <option value="">
+                                    -- Select Employee --
+                                </option>
+
+                                @foreach (var employee in employees)
+                                {
+                                    if (selectedEmployeeId.HasValue &&
+                                    selectedEmployeeId.Value == employee.Id)
+                                    {
+                                        <option value="@employee.Id"
+                                                selected>
+                                            @employee.FirstName @employee.LastName
+                                        </option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@employee.Id">
+                                            @employee.FirstName @employee.LastName
+                                        </option>
+                                    }
+                                }
+
+                            </select>
+
+                        </div>
+                    }
+                    else
+                    {
+                        <input type="hidden"
+                               name="employeeId"
+                               value="@selectedEmployeeId" />
+                    }
+
+
+                    <!-- MONTH -->
+                    <div class="col-md-3">
+
+                        <label class="form-label fw-semibold">
+                            Month
+                        </label>
+
+                        <select name="month"
+                                class="form-select">
+
+                            @for (int month = 1; month <= 12; month++)
+                            {
+                                string currentMonthName =
+                                new DateTime(2000, month, 1)
+                                .ToString("MMMM");
+
+                                if (month == selectedMonth)
+                                {
+                                    <option value="@month"
+                                            selected>
+                                        @currentMonthName
+                                    </option>
+                                }
+                                else
+                                {
+                                    <option value="@month">
+                                        @currentMonthName
+                                    </option>
+                                }
+                            }
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- YEAR -->
+                    <div class="col-md-2">
+
+                        <label class="form-label fw-semibold">
+                            Year
+                        </label>
+
+                        <select name="year"
+                                class="form-select">
+
+                            @for (
+                            int year = DateTime.Today.Year - 2;
+                            year <= DateTime.Today.Year + 1;
+                            year++
+                            )
+                            {
+                                if (year == selectedYear)
+                                {
+                                    <option value="@year"
+                                            selected>
+                                        @year
+                                    </option>
+                                }
+                                else
+                                {
+                                    <option value="@year">
+                                        @year
+                                    </option>
+                                }
+                            }
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- VIEW BUTTON -->
+                    <div class="col-md-2">
+
+                        <button type="submit"
+                                class="btn btn-primary w-100">
+
+                            <i class="bi bi-search me-1"></i>
+                            View Attendance
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <!-- NO EMPLOYEE SELECTED -->
+    @if (!selectedEmployeeId.HasValue && !isEmployee)
+    {
+        <div class="card shadow-sm border-0">
+
+            <div class="card-body text-center py-5">
+
+                <i class="bi bi-person-lines-fill"
+                   style="font-size:60px; opacity:.35;">
+                </i>
+
+                <h5 class="mt-3 fw-bold">
+                    Select an Employee
+                </h5>
+
+                <p class="text-muted mb-0">
+                    Please select an employee to view attendance.
+                </p>
+
+            </div>
+
+        </div>
+    }
+    else
+    {
+
+        <!-- EMPLOYEE INFORMATION -->
+        <div class="card shadow-sm border-0 mb-4">
+
+            <div class="card-body">
+
+                <div class="d-flex align-items-center">
+
+                    <div class="rounded-circle bg-primary text-white
+                                d-flex align-items-center
+                                justify-content-center"
+                         style="width:55px;height:55px;">
+
+                        <i class="bi bi-person-fill fs-4"></i>
+
+                    </div>
+
+
+                    <div class="ms-3">
+
+                        <h5 class="fw-bold mb-1">
+                            @selectedEmployeeName
+                        </h5>
+
+                        <p class="text-muted mb-0">
+
+                            Attendance for
+
+                            <strong>
+                                @monthName @selectedYear
+                            </strong>
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- STATISTICS -->
+        <div class="row g-3 mb-4">
+
+
+            <!-- TOTAL DAYS -->
+            <div class="col-md-3">
+
+                <div class="card shadow-sm border-0 h-100">
+
+                    <div class="card-body">
+
+                        <div class="d-flex justify-content-between">
+
+                            <div>
+
+                                <p class="text-muted mb-1">
+                                    Total Days
+                                </p>
+
+                                <h3 class="fw-bold mb-0">
+                                    @totalDays
+                                </h3>
+
+                            </div>
+
+                            <div class="text-primary fs-2">
+                                <i class="bi bi-calendar3"></i>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- PRESENT -->
+            <div class="col-md-3">
+
+                <div class="card shadow-sm border-0 h-100">
+
+                    <div class="card-body">
+
+                        <div class="d-flex justify-content-between">
+
+                            <div>
+
+                                <p class="text-muted mb-1">
+                                    Present Days
+                                </p>
+
+                                <h3 class="fw-bold text-success mb-0">
+                                    @presentDays
+                                </h3>
+
+                            </div>
+
+                            <div class="text-success fs-2">
+                                <i class="bi bi-check-circle"></i>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ABSENT -->
+            <div class="col-md-3">
+
+                <div class="card shadow-sm border-0 h-100">
+
+                    <div class="card-body">
+
+                        <div class="d-flex justify-content-between">
+
+                            <div>
+
+                                <p class="text-muted mb-1">
+                                    Absent Days
+                                </p>
+
+                                <h3 class="fw-bold text-danger mb-0">
+                                    @absentDays
+                                </h3>
+
+                            </div>
+
+                            <div class="text-danger fs-2">
+                                <i class="bi bi-x-circle"></i>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- CHECKED OUT -->
+            <div class="col-md-3">
+
+                <div class="card shadow-sm border-0 h-100">
+
+                    <div class="card-body">
+
+                        <div class="d-flex justify-content-between">
+
+                            <div>
+
+                                <p class="text-muted mb-1">
+                                    Checked Out
+                                </p>
+
+                                <h3 class="fw-bold text-primary mb-0">
+                                    @checkedOutDays
+                                </h3>
+
+                            </div>
+
+                            <div class="text-primary fs-2">
+                                <i class="bi bi-box-arrow-right"></i>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ATTENDANCE TABLE -->
+        <div class="card shadow-sm border-0">
+
+            <div class="card-header bg-white py-3">
+
+                <div class="d-flex justify-content-between
+                            align-items-center">
+
+                    <div>
+
+                        <h5 class="fw-bold mb-1">
+                            Attendance Records
+                        </h5>
+
+                        <small class="text-muted">
+                            @monthName @selectedYear
+                        </small>
+
+                    </div>
+
+                    <span class="badge bg-light text-dark">
+                        @totalRecords Records
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="card-body p-0">
+
+                @if (attendanceList.Any())
+                {
+                    <div class="table-responsive">
+
+                        <table class="table table-hover
+                                      align-middle mb-0">
+
+                            <thead class="table-light">
+
+                                <tr>
+
+                                    <th class="ps-4">
+                                        #
+                                    </th>
+
+                                    <th>
+                                        DATE
+                                    </th>
+
+                                    <th>
+                                        DAY
+                                    </th>
+
+                                    <th>
+                                        CHECK IN
+                                    </th>
+
+                                    <th>
+                                        CHECK OUT
+                                    </th>
+
+                                    <th>
+                                        WORKING HOURS
+                                    </th>
+
+                                    <th>
+                                        STATUS
+                                    </th>
+
+                                </tr>
+
+                            </thead>
+
+
+                            <tbody>
+
+                                @{
+                                    int serialNumber =
+                                    ((currentPage - 1) * pageSize) + 1;
+                                }
+
+
+                                @foreach (var item in attendanceList)
+                                {
+                                    <tr>
+
+                                        <td class="ps-4 fw-semibold">
+                                            @serialNumber
+                                        </td>
+
+
+                                        <td>
+
+                                            <strong>
+                                                @item.Date.ToString("dd MMM yyyy")
+                                            </strong>
+
+                                        </td>
+
+
+                                        <td>
+                                            @item.Date.ToString("dddd")
+                                        </td>
+
+
+                                        <td>
+
+                                            @if (item.CheckIn.HasValue)
+                                            {
+                                                <span class="text-success">
+
+                                                    <i class="bi bi-clock me-1"></i>
+
+                                                    @item.CheckIn.Value
+                                                    .ToString("hh:mm tt")
+
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">
+                                                    -
+                                                </span>
+                                            }
+
+                                        </td>
+
+
+                                        <td>
+
+                                            @if (item.CheckOut.HasValue)
+                                            {
+                                                <span class="text-primary">
+
+                                                    <i class="bi bi-clock-history me-1"></i>
+
+                                                    @item.CheckOut.Value
+                                                    .ToString("hh:mm tt")
+
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">
+                                                    -
+                                                </span>
+                                            }
+
+                                        </td>
+
+
+                                        <td>
+
+                                            <strong>
+                                                @item.WorkingHours
+                                            </strong>
+
+                                        </td>
+
+
+                                        <td>
+
+                                            @if (item.Status == "Present")
+                                            {
+                                                <span class="badge bg-success">
+
+                                                    <i class="bi bi-check-circle me-1"></i>
+                                                    Present
+
+                                                </span>
+                                            }
+                                            else if (item.Status == "Absent")
+                                            {
+                                                <span class="badge bg-danger">
+
+                                                    <i class="bi bi-x-circle me-1"></i>
+                                                    Absent
+
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-secondary">
+                                                    @item.Status
+                                                </span>
+                                            }
+
+                                        </td>
+
+                                    </tr>
+
+                                    serialNumber++;
+                                }
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-5">
+
+                        <i class="bi bi-calendar-x"
+                           style="font-size:55px; opacity:.35;">
+                        </i>
+
+                        <h5 class="mt-3 fw-bold">
+                            No Attendance Records
+                        </h5>
+
+                        <p class="text-muted mb-0">
+                            No attendance records found for
+                            @monthName @selectedYear.
+                        </p>
+
+                    </div>
+                }
+
+            </div>
+
+
+            <!-- PAGINATION -->
+            @if (totalPages > 1)
+            {
+                <div class="card-footer bg-white">
+
+                    <nav>
+
+                        <ul class="pagination
+                                   justify-content-center mb-0">
+
+
+                            <!-- PREVIOUS -->
+                            <li class="page-item
+                                @(currentPage <= 1 ? "disabled" : "")">
+
+                                <a class="page-link"
+                                   asp-action="Index"
+                                   asp-route-employeeId="@selectedEmployeeId"
+                                   asp-route-month="@selectedMonth"
+                                   asp-route-year="@selectedYear"
+                                   asp-route-page="@(currentPage - 1)">
+
+                                    Previous
+
+                                </a>
+
+                            </li>
+
+
+                            <!-- PAGE NUMBERS -->
+                            @for (int i = 1; i <= totalPages; i++)
+                            {
+                                <li class="page-item
+                                    @(i == currentPage ? "active" : "")">
+
+                                    <a class="page-link"
+                                       asp-action="Index"
+                                       asp-route-employeeId="@selectedEmployeeId"
+                                       asp-route-month="@selectedMonth"
+                                       asp-route-year="@selectedYear"
+                                       asp-route-page="@i">
+
+                                        @i
+
+                                    </a>
+
+                                </li>
+                            }
+
+
+                            <!-- NEXT -->
+                            <li class="page-item
+                                @(currentPage >= totalPages ? "disabled" : "")">
+
+                                <a class="page-link"
+                                   asp-action="Index"
+                                   asp-route-employeeId="@selectedEmployeeId"
+                                   asp-route-month="@selectedMonth"
+                                   asp-route-year="@selectedYear"
+                                   asp-route-page="@(currentPage + 1)">
+
+                                    Next
+
+                                </a>
+
+                            </li>
+
+                        </ul>
+
+                    </nav>
+
+                </div>
+            }
+
+        </div>
+
+    }
+
+</div>

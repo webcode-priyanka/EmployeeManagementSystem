@@ -1,0 +1,995 @@
+﻿@model EmployeeManagementSystem.Models.Employee
+
+@{
+    ViewData["Title"] = "My Profile";
+
+    var documents =
+        ViewBag.Documents as IEnumerable<EmployeeManagementSystem.Models.EmployeeDocument>
+        ?? Enumerable.Empty<EmployeeManagementSystem.Models.EmployeeDocument>();
+
+    var documentTypes = new[]
+    {
+        "Aadhar Card",
+        "PAN Card",
+        "Resume",
+        "Offer Letter",
+        "Joining Letter",
+        "Educational Certificate",
+        "Experience Certificate",
+        "Other"
+    };
+}
+
+<style>
+
+    .profile-page {
+        padding: 10px 5px 30px;
+    }
+
+    /* ================= PROFILE HEADER ================= */
+
+    .profile-header {
+        background: linear-gradient(135deg, #1e293b, #334155);
+        border-radius: 18px;
+        padding: 30px;
+        color: white;
+        margin-bottom: 24px;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+    }
+
+    .profile-avatar {
+        width: 85px;
+        height: 85px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.15);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 32px;
+        font-weight: 700;
+        border: 3px solid rgba(255,255,255,0.3);
+    }
+
+    .profile-name {
+        font-size: 28px;
+        font-weight: 700;
+        margin-bottom: 5px;
+    }
+
+    .profile-designation {
+        color: #cbd5e1;
+        margin-bottom: 12px;
+    }
+
+    .employee-badge {
+        display: inline-block;
+        padding: 6px 12px;
+        border-radius: 20px;
+        background: rgba(255,255,255,0.12);
+        font-size: 13px;
+    }
+
+    /* ================= PROFILE CARDS ================= */
+
+    .profile-card {
+        background: white;
+        border-radius: 16px;
+        padding: 24px;
+        margin-bottom: 20px;
+        border: 1px solid #e5e7eb;
+        box-shadow: 0 5px 18px rgba(0,0,0,0.04);
+    }
+
+    .card-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: #1f2937;
+        margin-bottom: 22px;
+        display: flex;
+        align-items: center;
+        gap: 9px;
+    }
+
+        .card-title i {
+            color: #2563eb;
+        }
+
+    .info-item {
+        margin-bottom: 20px;
+    }
+
+    .info-label {
+        font-size: 12px;
+        color: #64748b;
+        font-weight: 600;
+        text-transform: uppercase;
+        margin-bottom: 5px;
+    }
+
+    .info-value {
+        font-size: 15px;
+        font-weight: 600;
+        color: #1e293b;
+    }
+
+    /* ================= STATUS ================= */
+
+    .status-active {
+        display: inline-block;
+        padding: 5px 12px;
+        border-radius: 20px;
+        background: #dcfce7;
+        color: #166534;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .status-inactive {
+        display: inline-block;
+        padding: 5px 12px;
+        border-radius: 20px;
+        background: #fee2e2;
+        color: #991b1b;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    /* ================= DOCUMENT SECTION ================= */
+
+    .documents-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 22px;
+    }
+
+    .document-count {
+        background: #eff6ff;
+        color: #2563eb;
+        padding: 6px 13px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    /* ================= DOCUMENT CARD ================= */
+
+    .document-card {
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 15px;
+        padding: 18px;
+        height: 100%;
+        min-height: 270px;
+        position: relative;
+        transition: all 0.2s ease;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+    }
+
+        .document-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 22px rgba(0,0,0,0.07);
+        }
+
+    .document-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 18px;
+    }
+
+    .document-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 11px;
+        background: #eff6ff;
+        color: #2563eb;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+    }
+
+    .document-label {
+        font-size: 10px;
+        color: #94a3b8;
+        text-transform: uppercase;
+        font-weight: 700;
+        margin-bottom: 2px;
+    }
+
+    .document-title {
+        font-size: 15px;
+        font-weight: 700;
+        color: #1e293b;
+        line-height: 1.3;
+    }
+
+    /* ================= DOCUMENT STATUS ================= */
+
+    .document-status {
+        padding: 5px 9px;
+        border-radius: 20px;
+        font-size: 10px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .status-pending {
+        background: #fef3c7;
+        color: #92400e;
+    }
+
+    .status-verified {
+        background: #dcfce7;
+        color: #166534;
+    }
+
+    .status-rejected {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+    .status-not-uploaded {
+        background: #f1f5f9;
+        color: #64748b;
+    }
+
+    /* ================= UPLOADED FILE ================= */
+
+    .uploaded-file {
+        background: #f8fafc;
+        border-radius: 10px;
+        padding: 12px;
+        margin-bottom: 14px;
+    }
+
+    .uploaded-file-name {
+        font-size: 12px;
+        font-weight: 600;
+        color: #334155;
+        word-break: break-word;
+        margin-bottom: 5px;
+    }
+
+    .uploaded-date {
+        font-size: 11px;
+        color: #94a3b8;
+    }
+
+    .document-actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 15px;
+    }
+
+    .view-btn {
+        flex: 1;
+        text-align: center;
+        text-decoration: none;
+        padding: 8px;
+        border-radius: 8px;
+        background: #eff6ff;
+        color: #2563eb;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+        .view-btn:hover {
+            background: #2563eb;
+            color: white;
+        }
+
+    /* ================= UPLOAD AREA ================= */
+
+    .upload-area {
+        background: #f8fafc;
+        border-radius: 12px;
+        min-height: 155px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 15px;
+    }
+
+    .upload-cloud {
+        font-size: 25px;
+        color: #94a3b8;
+        margin-bottom: 8px;
+    }
+
+    .upload-heading {
+        font-size: 13px;
+        font-weight: 700;
+        color: #475569;
+        margin-bottom: 3px;
+    }
+
+    .upload-info {
+        font-size: 10px;
+        color: #94a3b8;
+        margin-bottom: 12px;
+    }
+
+    .upload-input {
+        display: none;
+    }
+
+    .choose-file-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 13px;
+        border-radius: 7px;
+        background: #2563eb;
+        color: white;
+        font-size: 11px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+        .choose-file-btn:hover {
+            background: #1d4ed8;
+        }
+
+    /* ================= NOTE ================= */
+
+    .profile-note {
+        background: #f8fafc;
+        border: 1px solid #e5e7eb;
+        border-radius: 14px;
+        padding: 18px;
+        margin-top: 20px;
+    }
+
+    /* ================= RESPONSIVE ================= */
+
+    @@media (max-width: 768px) {
+
+        .profile-header {
+            padding: 22px;
+        }
+
+        .profile-name {
+            font-size: 23px;
+        }
+
+        .profile-avatar {
+            width: 70px;
+            height: 70px;
+            font-size: 26px;
+        }
+
+        .documents-header {
+            align-items: flex-start;
+            gap: 10px;
+        }
+    }
+
+</style>
+
+
+<div class="container-fluid profile-page">
+
+    <!-- ================= PAGE HEADER ================= -->
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+
+            <h2 class="fw-bold mb-1">
+                My Profile
+            </h2>
+
+            <p class="text-muted mb-0">
+                View your personal, employment and document information
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================= ALERTS ================= -->
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show">
+
+            <i class="bi bi-check-circle me-2"></i>
+
+            @TempData["Success"]
+
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert">
+            </button>
+
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show">
+
+            <i class="bi bi-exclamation-circle me-2"></i>
+
+            @TempData["Error"]
+
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert">
+            </button>
+
+        </div>
+    }
+
+
+    <!-- ================= PROFILE HEADER ================= -->
+
+    <div class="profile-header">
+
+        <div class="d-flex align-items-center gap-4">
+
+            <div class="profile-avatar">
+
+                @Model.FirstName.Substring(0, 1).ToUpper()
+
+            </div>
+
+            <div>
+
+                <div class="profile-name">
+
+                    @Model.FirstName @Model.LastName
+
+                </div>
+
+                <div class="profile-designation">
+
+                    @Model.Designation
+
+                </div>
+
+                <span class="employee-badge">
+
+                    <i class="bi bi-person-badge me-1"></i>
+
+                    Employee ID: @Model.Id
+
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================= INFORMATION ================= -->
+
+    <div class="row">
+
+        <!-- PERSONAL INFORMATION -->
+
+        <div class="col-lg-6">
+
+            <div class="profile-card">
+
+                <div class="card-title">
+
+                    <i class="bi bi-person"></i>
+
+                    Personal Information
+
+                </div>
+
+                <div class="row">
+
+                    <div class="col-md-6">
+
+                        <div class="info-item">
+
+                            <div class="info-label">
+                                First Name
+                            </div>
+
+                            <div class="info-value">
+                                @Model.FirstName
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="col-md-6">
+
+                        <div class="info-item">
+
+                            <div class="info-label">
+                                Last Name
+                            </div>
+
+                            <div class="info-value">
+                                @Model.LastName
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="col-md-6">
+
+                        <div class="info-item">
+
+                            <div class="info-label">
+                                Email
+                            </div>
+
+                            <div class="info-value">
+                                @Model.Email
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="col-md-6">
+
+                        <div class="info-item">
+
+                            <div class="info-label">
+                                Phone
+                            </div>
+
+                            <div class="info-value">
+
+                                @(string.IsNullOrEmpty(Model.Phone)
+                                    ? "Not Provided"
+                                    : Model.Phone)
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="col-md-6">
+
+                        <div class="info-item">
+
+                            <div class="info-label">
+                                Date of Birth
+                            </div>
+
+                            <div class="info-value">
+
+                                @Model.DateOfBirth.ToString("dd MMM yyyy")
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- EMPLOYMENT INFORMATION -->
+
+        <div class="col-lg-6">
+
+            <div class="profile-card">
+
+                <div class="card-title">
+
+                    <i class="bi bi-briefcase"></i>
+
+                    Employment Information
+
+                </div>
+
+                <div class="row">
+
+                    <div class="col-md-6">
+
+                        <div class="info-item">
+
+                            <div class="info-label">
+                                Department
+                            </div>
+
+                            <div class="info-value">
+
+                                @(Model.Department?.Name ?? "Not Assigned")
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="col-md-6">
+
+                        <div class="info-item">
+
+                            <div class="info-label">
+                                Designation
+                            </div>
+
+                            <div class="info-value">
+                                @Model.Designation
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="col-md-6">
+
+                        <div class="info-item">
+
+                            <div class="info-label">
+                                Joining Date
+                            </div>
+
+                            <div class="info-value">
+
+                                @Model.JoiningDate.ToString("dd MMM yyyy")
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="col-md-6">
+
+                        <div class="info-item">
+
+                            <div class="info-label">
+                                Salary
+                            </div>
+
+                            <div class="info-value">
+
+                                ₹ @Model.Salary.ToString("N0")
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="col-md-6">
+
+                        <div class="info-item">
+
+                            <div class="info-label">
+                                Status
+                            </div>
+
+                            <div class="info-value">
+
+                                @if (Model.Status == "Active")
+                                {
+                                    <span class="status-active">
+
+                                        <i class="bi bi-check-circle me-1"></i>
+
+                                        Active
+
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="status-inactive">
+
+                                        <i class="bi bi-x-circle me-1"></i>
+
+                                        @Model.Status
+
+                                    </span>
+                                }
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ===================================================== -->
+    <!-- EMPLOYEE DOCUMENTS -->
+    <!-- ===================================================== -->
+
+    <div class="profile-card">
+
+        <div class="documents-header">
+
+            <div class="card-title mb-0">
+
+                <i class="bi bi-folder2-open"></i>
+
+                Employee Documents
+
+            </div>
+
+            <span class="document-count">
+
+                @documents.Count() / @documentTypes.Length Uploaded
+
+            </span>
+
+        </div>
+
+
+        <div class="row g-3">
+
+            @foreach (var documentType in documentTypes)
+            {
+                var document = documents
+                .FirstOrDefault(d => d.DocumentType == documentType);
+
+
+                <div class="col-xl-4 col-lg-6">
+
+                    <div class="document-card">
+
+                        <!-- DOCUMENT TOP -->
+
+                        <div class="document-top">
+
+                            <div class="d-flex gap-2">
+
+                                <div class="document-icon">
+
+                                    <i class="bi bi-file-earmark-text"></i>
+
+                                </div>
+
+                                <div>
+
+                                    <div class="document-label">
+                                        Document
+                                    </div>
+
+                                    <div class="document-title">
+                                        @documentType
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+
+                            @if (document != null)
+                            {
+                                @if (document.VerificationStatus == "Verified")
+                                {
+                                    <span class="document-status status-verified">
+
+                                        <i class="bi bi-check-circle me-1"></i>
+                                        Verified
+
+                                    </span>
+                                }
+                                else if (document.VerificationStatus == "Rejected")
+                                {
+                                    <span class="document-status status-rejected">
+
+                                        <i class="bi bi-x-circle me-1"></i>
+                                        Rejected
+
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="document-status status-pending">
+
+                                        <i class="bi bi-clock me-1"></i>
+                                        Pending
+
+                                    </span>
+                                }
+                            }
+                            else
+                            {
+                                <span class="document-status status-not-uploaded">
+
+                                    <i class="bi bi-dash-circle me-1"></i>
+                                    Not Uploaded
+
+                                </span>
+                            }
+
+                        </div>
+
+
+                        @if (document != null)
+                        {
+                            <!-- ================= UPLOADED ================= -->
+
+                            <div class="uploaded-file">
+
+                                <div class="uploaded-file-name">
+
+                                    <i class="bi bi-file-earmark me-1"></i>
+
+                                    @document.FileName
+
+                                </div>
+
+                                <div class="uploaded-date">
+
+                                    <i class="bi bi-calendar3 me-1"></i>
+
+                                    Uploaded:
+                                    @document.UploadedAt.ToString("dd MMM yyyy hh:mm tt")
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- VIEW BUTTON -->
+
+                            <div class="document-actions">
+
+                                <a href="@document.FilePath"
+                                   target="_blank"
+                                   class="view-btn">
+
+                                    <i class="bi bi-eye me-1"></i>
+
+                                    View Document
+
+                                </a>
+
+                            </div>
+                        }
+                        else
+                        {
+                            <!-- ================= NOT UPLOADED ================= -->
+
+                            <div class="upload-area">
+
+                                <div class="upload-cloud">
+
+                                    <i class="bi bi-cloud-arrow-up"></i>
+
+                                </div>
+
+                                <div class="upload-heading">
+
+                                    Upload Document
+
+                                </div>
+
+                                <div class="upload-info">
+
+                                    PDF, JPG, JPEG, PNG, DOC, DOCX — Max 5 MB
+
+                                </div>
+
+
+                                <form asp-controller="Documents"
+                                      asp-action="Upload"
+                                      method="post"
+                                      enctype="multipart/form-data">
+
+                                    @Html.AntiForgeryToken()
+
+                                    <input type="hidden"
+                                           name="employeeId"
+                                           value="@Model.Id" />
+
+                                    <input type="hidden"
+                                           name="documentType"
+                                           value="@documentType" />
+
+
+                                    <input type="file"
+                                           name="file"
+                                           id="file_@documentType.Replace(" ", "_")"
+                                           class="upload-input"
+                                           accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+                                           onchange="this.form.submit();"
+                                           required />
+
+
+                                    <label for="file_@documentType.Replace(" ", "_")"
+                                           class="choose-file-btn">
+
+                                        <i class="bi bi-upload"></i>
+
+                                        Choose File
+
+                                    </label>
+
+                                </form>
+
+                            </div>
+                        }
+
+                    </div>
+
+                </div>
+            }
+
+        </div>
+
+    </div>
+
+
+    <!-- ================= INFORMATION NOTE ================= -->
+
+    <div class="profile-note">
+
+        <div class="d-flex align-items-start gap-3">
+
+            <i class="bi bi-info-circle-fill text-primary fs-4"></i>
+
+            <div>
+
+                <h6 class="fw-bold mb-1">
+                    Document Information
+                </h6>
+
+                <p class="text-muted mb-0">
+
+                    You can upload your required employee documents from
+                    this page. Uploaded documents may be reviewed and
+                    verified by HR or Administrator.
+
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    // Automatically hide success/error messages
+    setTimeout(function () {
+
+        var alerts = document.querySelectorAll(".alert");
+
+        alerts.forEach(function (alert) {
+
+            var bsAlert = bootstrap.Alert.getOrCreateInstance(alert);
+
+            bsAlert.close();
+
+        });
+
+    }, 4000);
+
+</script>

@@ -1,0 +1,1113 @@
+﻿@using System.Text.Json
+@model EmployeeManagementSystem.Models.DashboardViewModel
+
+@{
+    ViewData["Title"] = "Dashboard";
+
+    var role = User.IsInRole("Admin") ? "Admin" :
+               User.IsInRole("HR") ? "HR" :
+               User.IsInRole("Manager") ? "Manager" :
+               User.IsInRole("Employee") ? "Employee" : "";
+
+    var currentUserName = "Priyanka Gupta";
+}
+
+<style>
+    .dashboard-page {
+        padding: 20px;
+    }
+
+    .dashboard-header {
+        margin-bottom: 25px;
+    }
+
+        .dashboard-header h2 {
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .dashboard-header p {
+            color: #777;
+            margin-bottom: 0;
+        }
+
+    .stat-card {
+        border: none;
+        border-radius: 15px;
+        padding: 20px;
+        height: 100%;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        transition: 0.2s;
+    }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .stat-card h6 {
+            color: #777;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .stat-card h3 {
+            font-weight: 700;
+            margin: 0;
+        }
+
+    .chart-card {
+        background: #fff;
+        border-radius: 15px;
+        padding: 20px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        height: 100%;
+    }
+
+        .chart-card h5 {
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+    .chart-container {
+        position: relative;
+        height: 320px;
+    }
+
+    .table-card {
+        background: #fff;
+        border-radius: 15px;
+        padding: 20px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    }
+
+        .table-card h5 {
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+    .badge-active {
+        background: #198754;
+    }
+
+    .badge-inactive {
+        background: #dc3545;
+    }
+
+    .welcome-card {
+        background: linear-gradient(135deg, #0d6efd, #6610f2);
+        color: white;
+        border-radius: 15px;
+        padding: 25px;
+        margin-bottom: 25px;
+    }
+
+        .welcome-card h3 {
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .welcome-card p {
+            margin-bottom: 0;
+            opacity: 0.9;
+        }
+</style>
+
+
+<div class="dashboard-page">
+
+    <!-- ========================= -->
+    <!-- WELCOME SECTION -->
+    <!-- ========================= -->
+
+    <div class="welcome-card">
+
+        <h3>Welcome, @currentUserName 👋</h3>
+
+        @if (role == "Admin")
+        {
+            <p>
+                Manage employees, departments, attendance, leaves and salaries
+                from your dashboard.
+            </p>
+        }
+        else if (role == "HR")
+        {
+            <p>
+                Manage employee information, attendance, leaves and salary records.
+            </p>
+        }
+        else if (role == "Manager")
+        {
+            <p>
+                View your team information, attendance and leave details.
+            </p>
+        }
+        else
+        {
+            <p>
+                View your profile, attendance, leaves and salary information.
+            </p>
+        }
+
+    </div>
+
+
+    <!-- ===================================================== -->
+    <!-- ADMIN / HR DASHBOARD -->
+    <!-- ===================================================== -->
+    @if (role == "Admin" || role == "HR")
+    {
+
+        <!-- ========================= -->
+        <!-- SUMMARY CARDS -->
+        <!-- ========================= -->
+
+        <div class="row g-4 mb-4">
+
+            <div class="col-md-3">
+                <div class="stat-card bg-light">
+
+                    <h6>Total Employees</h6>
+
+                    <h3>
+                        @Model.TotalEmployees
+                    </h3>
+
+                </div>
+            </div>
+
+
+            <div class="col-md-3">
+                <div class="stat-card bg-light">
+
+                    <h6>Active Employees</h6>
+
+                    <h3>
+                        @Model.ActiveEmployees
+                    </h3>
+
+                </div>
+            </div>
+
+
+            <div class="col-md-3">
+                <div class="stat-card bg-light">
+
+                    <h6>Inactive Employees</h6>
+
+                    <h3>
+                        @Model.InactiveEmployees
+                    </h3>
+
+                </div>
+            </div>
+
+
+            <div class="col-md-3">
+                <div class="stat-card bg-light">
+
+                    <h6>Departments</h6>
+
+                    <h3>
+                        @Model.TotalDepartments
+                    </h3>
+
+                </div>
+            </div>
+
+        </div>
+
+
+        <!-- ========================= -->
+        <!-- ATTENDANCE SUMMARY -->
+        <!-- ========================= -->
+
+        <div class="row g-4 mb-4">
+
+            <div class="col-md-4">
+                <div class="stat-card bg-light">
+
+                    <h6>Total Attendance</h6>
+
+                    <h3>
+                        @Model.TotalAttendance
+                    </h3>
+
+                </div>
+            </div>
+
+
+            <div class="col-md-4">
+                <div class="stat-card bg-light">
+
+                    <h6>Present</h6>
+
+                    <h3>
+                        @Model.PresentCount
+                    </h3>
+
+                </div>
+            </div>
+
+
+            <div class="col-md-4">
+                <div class="stat-card bg-light">
+
+                    <h6>Absent</h6>
+
+                    <h3>
+                        @Model.AbsentCount
+                    </h3>
+
+                </div>
+            </div>
+
+        </div>
+
+
+        <!-- ========================= -->
+        <!-- EMPLOYEE STATUS + ATTENDANCE -->
+        <!-- ========================= -->
+
+        <div class="row g-4 mb-4">
+
+            <div class="col-lg-6">
+
+                <div class="chart-card">
+
+                    <h5>Employee Status</h5>
+
+                    <div class="chart-container">
+
+                        <canvas id="employeeStatusChart"></canvas>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="col-lg-6">
+
+                <div class="chart-card">
+
+                    <h5>Attendance Overview</h5>
+
+                    <div class="chart-container">
+
+                        <canvas id="attendanceChart"></canvas>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ========================= -->
+        <!-- SALARY OVERVIEW -->
+        <!-- ========================= -->
+
+        <div class="row g-4 mb-4">
+
+            <div class="col-12">
+
+                <div class="chart-card">
+
+                    <h5>Salary Overview</h5>
+
+                    <div class="chart-container">
+
+                        <canvas id="salaryChart"></canvas>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ========================= -->
+        <!-- LEAVE STATUS -->
+        <!-- ========================= -->
+
+        <div class="row g-4 mb-4">
+
+            <div class="col-lg-6">
+
+                <div class="chart-card">
+
+                    <h5>Leave Status</h5>
+
+                    <div class="chart-container">
+
+                        <canvas id="leaveStatusChart"></canvas>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="col-lg-6">
+
+                <div class="table-card">
+
+                    <h5>Quick Information</h5>
+
+                    <div class="table-responsive">
+
+                        <table class="table table-hover">
+
+                            <tbody>
+
+                                <tr>
+                                    <td>
+                                        <strong>Total Employees</strong>
+                                    </td>
+
+                                    <td class="text-end">
+                                        @Model.TotalEmployees
+                                    </td>
+                                </tr>
+
+
+                                <tr>
+                                    <td>
+                                        <strong>Active Employees</strong>
+                                    </td>
+
+                                    <td class="text-end">
+                                        @Model.ActiveEmployees
+                                    </td>
+                                </tr>
+
+
+                                <tr>
+                                    <td>
+                                        <strong>Inactive Employees</strong>
+                                    </td>
+
+                                    <td class="text-end">
+                                        @Model.InactiveEmployees
+                                    </td>
+                                </tr>
+
+
+                                <tr>
+                                    <td>
+                                        <strong>Total Departments</strong>
+                                    </td>
+
+                                    <td class="text-end">
+                                        @Model.TotalDepartments
+                                    </td>
+                                </tr>
+
+
+                                <tr>
+                                    <td>
+                                        <strong>Total Attendance</strong>
+                                    </td>
+
+                                    <td class="text-end">
+                                        @Model.TotalAttendance
+                                    </td>
+                                </tr>
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    }
+
+
+    <!-- ===================================================== -->
+    <!-- MANAGER DASHBOARD -->
+    <!-- ===================================================== -->
+    @if (role == "Manager")
+    {
+
+        <div class="row g-4 mb-4">
+
+            <div class="col-md-4">
+
+                <div class="stat-card bg-light">
+
+                    <h6>My Team</h6>
+
+                    <h3>
+                        @Model.TotalEmployees
+                    </h3>
+
+                </div>
+
+            </div>
+
+
+            <div class="col-md-4">
+
+                <div class="stat-card bg-light">
+
+                    <h6>Present Today</h6>
+
+                    <h3>
+                        @Model.PresentCount
+                    </h3>
+
+                </div>
+
+            </div>
+
+
+            <div class="col-md-4">
+
+                <div class="stat-card bg-light">
+
+                    <h6>Absent Today</h6>
+
+                    <h3>
+                        @Model.AbsentCount
+                    </h3>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="row g-4">
+
+            <div class="col-lg-6">
+
+                <div class="chart-card">
+
+                    <h5>Team Attendance</h5>
+
+                    <div class="chart-container">
+
+                        <canvas id="managerAttendanceChart"></canvas>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="col-lg-6">
+
+                <div class="table-card">
+
+                    <h5>Manager Quick Information</h5>
+
+                    <table class="table table-hover">
+
+                        <tbody>
+
+                            <tr>
+
+                                <td>
+                                    <strong>Team Members</strong>
+                                </td>
+
+                                <td class="text-end">
+                                    @Model.TotalEmployees
+                                </td>
+
+                            </tr>
+
+
+                            <tr>
+
+                                <td>
+                                    <strong>Present</strong>
+                                </td>
+
+                                <td class="text-end">
+                                    @Model.PresentCount
+                                </td>
+
+                            </tr>
+
+
+                            <tr>
+
+                                <td>
+                                    <strong>Absent</strong>
+                                </td>
+
+                                <td class="text-end">
+                                    @Model.AbsentCount
+                                </td>
+
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    }
+
+
+    <!-- ===================================================== -->
+    <!-- EMPLOYEE DASHBOARD -->
+    <!-- ===================================================== -->
+    @if (role == "Employee")
+    {
+
+        <div class="row g-4 mb-4">
+
+            <div class="col-md-4">
+
+                <div class="stat-card bg-light">
+
+                    <h6>My Attendance</h6>
+
+                    <h3>
+                        @Model.TotalAttendance
+                    </h3>
+
+                </div>
+
+            </div>
+
+
+            <div class="col-md-4">
+
+                <div class="stat-card bg-light">
+
+                    <h6>Present</h6>
+
+                    <h3>
+                        @Model.PresentCount
+                    </h3>
+
+                </div>
+
+            </div>
+
+
+            <div class="col-md-4">
+
+                <div class="stat-card bg-light">
+
+                    <h6>Absent</h6>
+
+                    <h3>
+                        @Model.AbsentCount
+                    </h3>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="row g-4">
+
+            <div class="col-lg-6">
+
+                <div class="chart-card">
+
+                    <h5>My Attendance</h5>
+
+                    <div class="chart-container">
+
+                        <canvas id="employeeAttendanceChart"></canvas>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="col-lg-6">
+
+                <div class="table-card">
+
+                    <h5>My Dashboard</h5>
+
+                    <table class="table table-hover">
+
+                        <tbody>
+
+                            <tr>
+
+                                <td>
+                                    <strong>Total Attendance</strong>
+                                </td>
+
+                                <td class="text-end">
+                                    @Model.TotalAttendance
+                                </td>
+
+                            </tr>
+
+
+                            <tr>
+
+                                <td>
+                                    <strong>Present</strong>
+                                </td>
+
+                                <td class="text-end">
+                                    @Model.PresentCount
+                                </td>
+
+                            </tr>
+
+
+                            <tr>
+
+                                <td>
+                                    <strong>Absent</strong>
+                                </td>
+
+                                <td class="text-end">
+                                    @Model.AbsentCount
+                                </td>
+
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    }
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- CHART.JS -->
+<!-- ===================================================== -->
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+<script>
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+
+        /* ================================================= */
+        /* EMPLOYEE STATUS CHART */
+        /* ================================================= */
+
+        const employeeStatusCanvas =
+            document.getElementById("employeeStatusChart");
+
+        if (employeeStatusCanvas) {
+
+            const employeeStatusLabels =
+    @Html.Raw(JsonSerializer.Serialize((object)ViewBag.EmployeeStatusLabels));
+
+            const employeeStatusData =
+    @Html.Raw(JsonSerializer.Serialize((object)ViewBag.EmployeeStatusData));
+
+
+            new Chart(employeeStatusCanvas, {
+
+                type: "doughnut",
+
+                data: {
+
+                    labels: employeeStatusLabels || [],
+
+                    datasets: [{
+
+                        data: employeeStatusData || [],
+
+                        borderWidth: 1
+
+                    }]
+
+                },
+
+                options: {
+
+                    responsive: true,
+
+                    maintainAspectRatio: false,
+
+                    plugins: {
+
+                        legend: {
+
+                            position: "bottom"
+
+                        }
+
+                    }
+
+                }
+
+            });
+
+        }
+
+
+        /* ================================================= */
+        /* ATTENDANCE CHART */
+        /* ================================================= */
+
+        const attendanceCanvas =
+            document.getElementById("attendanceChart");
+
+        if (attendanceCanvas) {
+
+            const attendanceLabels =
+    @Html.Raw(JsonSerializer.Serialize((object)ViewBag.AttendanceLabels));
+
+            const attendanceData =
+    @Html.Raw(JsonSerializer.Serialize((object)ViewBag.AttendanceData));
+
+
+            new Chart(attendanceCanvas, {
+
+                type: "bar",
+
+                data: {
+
+                    labels: attendanceLabels || [],
+
+                    datasets: [{
+
+                        label: "Attendance",
+
+                        data: attendanceData || [],
+
+                        borderWidth: 1
+
+                    }]
+
+                },
+
+                options: {
+
+                    responsive: true,
+
+                    maintainAspectRatio: false,
+
+                    scales: {
+
+                        y: {
+
+                            beginAtZero: true
+
+                        }
+
+                    }
+
+                }
+
+            });
+
+        }
+
+
+        /* ================================================= */
+        /* SALARY OVERVIEW CHART */
+        /* ================================================= */
+
+        const salaryCanvas =
+            document.getElementById("salaryChart");
+
+        if (salaryCanvas) {
+
+            const salaryLabels =
+    @Html.Raw(JsonSerializer.Serialize((object)ViewBag.SalaryLabels));
+
+            const salaryData =
+    @Html.Raw(JsonSerializer.Serialize((object)ViewBag.SalaryData));
+
+
+            new Chart(salaryCanvas, {
+
+                type: "bar",
+
+                data: {
+
+                    labels: salaryLabels || [],
+
+                    datasets: [{
+
+                        label: "Net Salary",
+
+                        data: salaryData || [],
+
+                        borderWidth: 1
+
+                    }]
+
+                },
+
+                options: {
+
+                    responsive: true,
+
+                    maintainAspectRatio: false,
+
+                    scales: {
+
+                        y: {
+
+                            beginAtZero: true,
+
+                            ticks: {
+
+                                callback: function (value) {
+
+                                    return "₹" +
+                                        Number(value).toLocaleString("en-IN");
+
+                                }
+
+                            }
+
+                        }
+
+                    },
+
+                    plugins: {
+
+                        legend: {
+
+                            display: true,
+
+                            position: "bottom"
+
+                        },
+
+                        tooltip: {
+
+                            callbacks: {
+
+                                label: function (context) {
+
+                                    return "Net Salary: ₹" +
+                                        Number(context.raw)
+                                            .toLocaleString("en-IN");
+
+                                }
+
+                            }
+
+                        }
+
+                    }
+
+                }
+
+            });
+
+        }
+
+
+        /* ================================================= */
+        /* LEAVE STATUS CHART */
+        /* ================================================= */
+
+        const leaveStatusCanvas =
+            document.getElementById("leaveStatusChart");
+
+        if (leaveStatusCanvas) {
+
+            const leaveStatusLabels =
+    @Html.Raw(JsonSerializer.Serialize((object)ViewBag.LeaveStatusLabels));
+
+            const leaveStatusData =
+    @Html.Raw(JsonSerializer.Serialize((object)ViewBag.LeaveStatusData));
+
+
+            new Chart(leaveStatusCanvas, {
+
+                type: "pie",
+
+                data: {
+
+                    labels: leaveStatusLabels || [],
+
+                    datasets: [{
+
+                        data: leaveStatusData || [],
+
+                        borderWidth: 1
+
+                    }]
+
+                },
+
+                options: {
+
+                    responsive: true,
+
+                    maintainAspectRatio: false,
+
+                    plugins: {
+
+                        legend: {
+
+                            position: "bottom"
+
+                        }
+
+                    }
+
+                }
+
+            });
+
+        }
+
+
+        /* ================================================= */
+        /* MANAGER ATTENDANCE CHART */
+        /* ================================================= */
+
+        const managerAttendanceCanvas =
+            document.getElementById("managerAttendanceChart");
+
+        if (managerAttendanceCanvas) {
+
+            const managerAttendanceLabels =
+    @Html.Raw(JsonSerializer.Serialize((object)ViewBag.ManagerAttendanceLabels));
+
+            const managerAttendanceData =
+    @Html.Raw(JsonSerializer.Serialize((object)ViewBag.ManagerAttendanceData));
+
+
+            new Chart(managerAttendanceCanvas, {
+
+                type: "bar",
+
+                data: {
+
+                    labels: managerAttendanceLabels || [],
+
+                    datasets: [{
+
+                        label: "Attendance",
+
+                        data: managerAttendanceData || [],
+
+                        borderWidth: 1
+
+                    }]
+
+                },
+
+                options: {
+
+                    responsive: true,
+
+                    maintainAspectRatio: false,
+
+                    scales: {
+
+                        y: {
+
+                            beginAtZero: true
+
+                        }
+
+                    }
+
+                }
+
+            });
+
+        }
+
+
+        /* ================================================= */
+        /* EMPLOYEE ATTENDANCE CHART */
+        /* ================================================= */
+
+        const employeeAttendanceCanvas =
+            document.getElementById("employeeAttendanceChart");
+
+        if (employeeAttendanceCanvas) {
+
+            const employeeAttendanceLabels =
+    @Html.Raw(JsonSerializer.Serialize((object)ViewBag.EmployeeAttendanceLabels));
+
+            const employeeAttendanceData =
+    @Html.Raw(JsonSerializer.Serialize((object)ViewBag.EmployeeAttendanceData));
+
+
+            new Chart(employeeAttendanceCanvas, {
+
+                type: "bar",
+
+                data: {
+
+                    labels: employeeAttendanceLabels || [],
+
+                    datasets: [{
+
+                        label: "Attendance",
+
+                        data: employeeAttendanceData || [],
+
+                        borderWidth: 1
+
+                    }]
+
+                },
+
+                options: {
+
+                    responsive: true,
+
+                    maintainAspectRatio: false,
+
+                    scales: {
+
+                        y: {
+
+                            beginAtZero: true
+
+                        }
+
+                    }
+
+                }
+
+            });
+
+        }
+
+    });
+
+</script>

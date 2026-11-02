@@ -1,0 +1,232 @@
+﻿@model EmployeeManagementSystem.Models.Leave
+
+@{
+    ViewData["Title"] = "Edit Leave";
+}
+
+<div class="container-fluid py-4">
+
+    <!-- Page Header -->
+    <div class="mb-4">
+
+        <h2 class="fw-bold mb-1">
+            Edit Leave
+        </h2>
+
+        <p class="text-muted mb-0">
+            Update employee leave request details
+        </p>
+
+    </div>
+
+
+    <!-- Leave Form -->
+    <div class="card border-0 shadow-sm">
+
+        <div class="card-body p-4">
+
+            <form asp-action="Edit" method="post">
+
+                <input type="hidden"
+                       asp-for="Id" />
+
+
+                <div asp-validation-summary="ModelOnly"
+                     class="text-danger mb-4">
+                </div>
+
+
+                <!-- Section Heading -->
+
+                <div class="form-section-title mb-4">
+
+                    <h5 class="fw-bold mb-1">
+                        Leave Information
+                    </h5>
+
+                    <p class="text-muted small mb-0">
+                        Update employee leave details below
+                    </p>
+
+                </div>
+
+
+                <div class="row">
+
+                    <!-- Employee -->
+
+                    <div class="col-md-6 mb-4">
+
+                        <label asp-for="EmployeeId"
+                               class="form-label">
+
+                            Employee
+
+                        </label>
+
+                        <select asp-for="EmployeeId"
+                                class="form-select"
+                                asp-items="ViewBag.Employees">
+
+                            <option value="">
+                                Select Employee
+                            </option>
+
+                        </select>
+
+                        <span asp-validation-for="EmployeeId"
+                              class="text-danger small">
+                        </span>
+
+                    </div>
+
+
+                    <!-- Leave Type -->
+
+                    <div class="col-md-6 mb-4">
+
+                        <label asp-for="LeaveType"
+                               class="form-label">
+
+                            Leave Type
+
+                        </label>
+
+                        <select asp-for="LeaveType"
+                                class="form-select">
+
+                            <option value="">
+                                Select Leave Type
+                            </option>
+
+                            <option value="Casual Leave">
+                                Casual Leave
+                            </option>
+
+                            <option value="Sick Leave">
+                                Sick Leave
+                            </option>
+
+                            <option value="Earned Leave">
+                                Earned Leave
+                            </option>
+
+                            <option value="Emergency Leave">
+                                Emergency Leave
+                            </option>
+
+                        </select>
+
+                        <span asp-validation-for="LeaveType"
+                              class="text-danger small">
+                        </span>
+
+                    </div>
+
+
+                    <!-- From Date -->
+
+                    <div class="col-md-6 mb-4">
+
+                        <label asp-for="FromDate"
+                               class="form-label">
+
+                            From Date
+
+                        </label>
+
+                        <input asp-for="FromDate"
+                               type="date"
+                               class="form-control" />
+
+                        <span asp-validation-for="FromDate"
+                              class="text-danger small">
+                        </span>
+
+                    </div>
+
+
+                    <!-- To Date -->
+
+                    <div class="col-md-6 mb-4">
+
+                        <label asp-for="ToDate"
+                               class="form-label">
+
+                            To Date
+
+                        </label>
+
+                        <input asp-for="ToDate"
+                               type="date"
+                               class="form-control" />
+
+                        <span asp-validation-for="ToDate"
+                              class="text-danger small">
+                        </span>
+
+                    </div>
+
+
+                    <!-- Reason -->
+
+                    <div class="col-12 mb-4">
+
+                        <label asp-for="Reason"
+                               class="form-label">
+
+                            Reason
+
+                        </label>
+
+                        <textarea asp-for="Reason"
+                                  class="form-control"
+                                  rows="4"
+                                  placeholder="Enter reason for leave"></textarea>
+
+                        <span asp-validation-for="Reason"
+                              class="text-danger small">
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Buttons -->
+
+                <div class="d-flex justify-content-end gap-2 mt-2">
+
+                    <a asp-action="Index"
+                       class="btn btn-light border px-4">
+
+                        Cancel
+
+                    </a>
+
+                    <button type="submit"
+                            class="btn btn-primary px-4">
+
+                        <i class="bi bi-check-lg me-1"></i>
+                        Update Leave
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+@section Scripts {
+
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+}

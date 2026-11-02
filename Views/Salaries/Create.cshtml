@@ -1,0 +1,284 @@
+﻿@model EmployeeManagementSystem.Models.Salary
+
+@{
+    ViewData["Title"] = "Add Salary";
+}
+
+<div class="container-fluid py-4">
+
+    <!-- Page Header -->
+    <div class="mb-4">
+        <h2 class="fw-bold mb-1">Add Salary</h2>
+        <p class="text-muted mb-0">
+            Add monthly salary details for an employee
+        </p>
+    </div>
+
+
+    <!-- Salary Form -->
+    <div class="card border-0 shadow-sm">
+
+        <div class="card-body p-4">
+
+            <form asp-action="Create" method="post">
+
+                <!-- Validation -->
+                <div asp-validation-summary="ModelOnly"
+                     class="text-danger mb-4">
+                </div>
+
+
+                <!-- Section Heading -->
+                <div class="mb-4">
+
+                    <h5 class="fw-bold mb-1">
+                        Salary Information
+                    </h5>
+
+                    <p class="text-muted small mb-0">
+                        Enter employee salary details below
+                    </p>
+
+                </div>
+
+
+                <div class="row">
+
+                    <!-- Employee -->
+                    <div class="col-md-6 mb-4">
+
+                        <label asp-for="EmployeeId"
+                               class="form-label">
+                            Employee
+                        </label>
+
+                        <select asp-for="EmployeeId"
+                                class="form-select"
+                                asp-items="ViewBag.Employees">
+
+                            <option value="0">
+                                Select Employee
+                            </option>
+
+                        </select>
+
+                        <span asp-validation-for="EmployeeId"
+                              class="text-danger small">
+                        </span>
+
+                    </div>
+
+
+                    <!-- Month -->
+                    <div class="col-md-6 mb-4">
+
+                        <label asp-for="Month"
+                               class="form-label">
+                            Salary Month
+                        </label>
+
+                        <input asp-for="Month"
+                               type="month"
+                               class="form-control" />
+
+                        <span asp-validation-for="Month"
+                              class="text-danger small">
+                        </span>
+
+                    </div>
+
+
+                    <!-- Basic Salary -->
+                    <div class="col-md-4 mb-4">
+
+                        <label asp-for="BasicSalary"
+                               class="form-label">
+                            Basic Salary
+                        </label>
+
+                        <div class="input-group">
+
+                            <span class="input-group-text">
+                                ₹
+                            </span>
+
+                            <input asp-for="BasicSalary"
+                                   type="number"
+                                   step="0.01"
+                                   min="0"
+                                   class="form-control"
+                                   placeholder="Enter basic salary" />
+
+                        </div>
+
+                        <span asp-validation-for="BasicSalary"
+                              class="text-danger small">
+                        </span>
+
+                    </div>
+
+
+                    <!-- Allowance -->
+                    <div class="col-md-4 mb-4">
+
+                        <label asp-for="Allowance"
+                               class="form-label">
+                            Allowance
+                        </label>
+
+                        <div class="input-group">
+
+                            <span class="input-group-text">
+                                ₹
+                            </span>
+
+                            <input asp-for="Allowance"
+                                   type="number"
+                                   step="0.01"
+                                   min="0"
+                                   value="0"
+                                   class="form-control"
+                                   placeholder="Enter allowance" />
+
+                        </div>
+
+                        <span asp-validation-for="Allowance"
+                              class="text-danger small">
+                        </span>
+
+                    </div>
+
+
+                    <!-- Deduction -->
+                    <div class="col-md-4 mb-4">
+
+                        <label asp-for="Deduction"
+                               class="form-label">
+                            Deduction
+                        </label>
+
+                        <div class="input-group">
+
+                            <span class="input-group-text">
+                                ₹
+                            </span>
+
+                            <input asp-for="Deduction"
+                                   type="number"
+                                   step="0.01"
+                                   min="0"
+                                   value="0"
+                                   class="form-control"
+                                   placeholder="Enter deduction" />
+
+                        </div>
+
+                        <span asp-validation-for="Deduction"
+                              class="text-danger small">
+                        </span>
+
+                    </div>
+
+
+                    <!-- Net Salary Preview -->
+                    <div class="col-md-6 mb-4">
+
+                        <label class="form-label fw-semibold">
+                            Net Salary
+                        </label>
+
+                        <div class="input-group">
+
+                            <span class="input-group-text">
+                                ₹
+                            </span>
+
+                            <input type="text"
+                                   id="netSalary"
+                                   class="form-control fw-bold"
+                                   value="0.00"
+                                   readonly />
+
+                        </div>
+
+                        <small class="text-muted">
+                            Net Salary = Basic Salary + Allowance - Deduction
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Buttons -->
+                <div class="d-flex justify-content-end gap-2 mt-2">
+
+                    <a asp-action="Index"
+                       class="btn btn-light border px-4">
+                        Cancel
+                    </a>
+
+                    <button type="submit"
+                            class="btn btn-primary px-4">
+
+                        <i class="bi bi-check-lg me-1"></i>
+                        Add Salary
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+@section Scripts {
+
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+
+    <script>
+
+        function calculateNetSalary() {
+
+            const basic =
+                parseFloat(document.getElementById("BasicSalary")?.value) || 0;
+
+            const allowance =
+                parseFloat(document.getElementById("Allowance")?.value) || 0;
+
+            const deduction =
+                parseFloat(document.getElementById("Deduction")?.value) || 0;
+
+            const netSalary =
+                basic + allowance - deduction;
+
+            document.getElementById("netSalary").value =
+                netSalary.toFixed(2);
+        }
+
+
+        document
+            .getElementById("BasicSalary")
+            ?.addEventListener("input", calculateNetSalary);
+
+        document
+            .getElementById("Allowance")
+            ?.addEventListener("input", calculateNetSalary);
+
+        document
+            .getElementById("Deduction")
+            ?.addEventListener("input", calculateNetSalary);
+
+        calculateNetSalary();
+
+    </script>
+
+}

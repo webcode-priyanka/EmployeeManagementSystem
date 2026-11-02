@@ -1,0 +1,465 @@
+﻿@model EmployeeManagementSystem.Models.Employee
+
+@{
+    ViewData["Title"] = "Edit Employee";
+}
+
+<style>
+    body {
+        background: #f5f7fb;
+    }
+
+    .edit-page {
+        padding: 20px 5px 40px;
+    }
+
+    .edit-header {
+        margin-bottom: 25px;
+    }
+
+    .page-title {
+        font-size: 28px;
+        font-weight: 700;
+        color: #1f2937;
+        margin-bottom: 5px;
+    }
+
+    .page-subtitle {
+        color: #6b7280;
+        font-size: 14px;
+    }
+
+    .edit-card {
+        background: #ffffff;
+        border: none;
+        border-radius: 14px;
+        box-shadow: 0 3px 15px rgba(0, 0, 0, 0.06);
+        overflow: hidden;
+    }
+
+    .card-header-custom {
+        padding: 20px 25px;
+        border-bottom: 1px solid #eef0f4;
+        background: #ffffff;
+    }
+
+    .card-header-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: #1f2937;
+        margin: 0;
+    }
+
+    .card-header-subtitle {
+        font-size: 13px;
+        color: #9ca3af;
+        margin-top: 4px;
+    }
+
+    .form-section {
+        padding: 25px;
+    }
+
+    .section-title {
+        font-size: 15px;
+        font-weight: 700;
+        color: #374151;
+        margin-bottom: 18px;
+    }
+
+    .form-label {
+        font-size: 13px;
+        font-weight: 600;
+        color: #4b5563;
+        margin-bottom: 7px;
+    }
+
+    .form-control,
+    .form-select {
+        border: 1px solid #dbe1ea;
+        border-radius: 8px;
+        padding: 10px 12px;
+        font-size: 14px;
+        color: #374151;
+        box-shadow: none;
+        transition: 0.2s;
+    }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.10);
+        }
+
+    .field-group {
+        margin-bottom: 18px;
+    }
+
+    .text-danger {
+        font-size: 12px;
+        margin-top: 5px;
+        display: block;
+    }
+
+    .status-select {
+        cursor: pointer;
+    }
+
+    .form-footer {
+        padding: 20px 25px;
+        border-top: 1px solid #eef0f4;
+        background: #fafbfc;
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+    }
+
+    .btn-update {
+        background: #2563eb;
+        color: #ffffff;
+        border: none;
+        border-radius: 8px;
+        padding: 10px 20px;
+        font-size: 14px;
+        font-weight: 600;
+        transition: 0.2s;
+    }
+
+        .btn-update:hover {
+            background: #1d4ed8;
+            color: #ffffff;
+            transform: translateY(-1px);
+        }
+
+    .btn-back {
+        background: #ffffff;
+        color: #374151;
+        border: 1px solid #dbe1ea;
+        border-radius: 8px;
+        padding: 9px 18px;
+        font-size: 14px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: 0.2s;
+    }
+
+        .btn-back:hover {
+            background: #f3f4f6;
+            color: #111827;
+        }
+
+    .employee-id {
+        display: inline-block;
+        background: #eff6ff;
+        color: #2563eb;
+        padding: 5px 10px;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 700;
+        margin-top: 8px;
+    }
+
+    @@media (max-width: 768px) {
+        .page-title {
+            font-size: 23px;
+        }
+
+        .form-footer {
+            flex-direction: column-reverse;
+        }
+
+        .btn-update,
+        .btn-back {
+            width: 100%;
+            text-align: center;
+        }
+    }
+</style>
+
+
+<div class="container-fluid edit-page">
+
+    <!-- Page Header -->
+    <div class="edit-header">
+
+        <h2 class="page-title">
+            Edit Employee
+        </h2>
+
+        <p class="page-subtitle">
+            Update and manage employee information
+        </p>
+
+        <span class="employee-id">
+            Employee ID: #@Model.Id
+        </span>
+
+    </div>
+
+
+    <!-- Edit Card -->
+    <div class="edit-card">
+
+        <!-- Card Header -->
+        <div class="card-header-custom">
+
+            <h5 class="card-header-title">
+                Employee Information
+            </h5>
+
+            <div class="card-header-subtitle">
+                Update the details below and click Update Employee
+            </div>
+
+        </div>
+
+
+        <!-- Form -->
+        <form asp-action="Edit" method="post">
+
+            <input type="hidden" asp-for="Id" />
+
+            <div class="form-section">
+
+                <!-- Personal Information -->
+                <div class="section-title">
+                    Personal Information
+                </div>
+
+                <div class="row">
+
+                    <!-- First Name -->
+                    <div class="col-md-6 field-group">
+
+                        <label asp-for="FirstName" class="form-label">
+                            First Name
+                        </label>
+
+                        <input asp-for="FirstName"
+                               class="form-control"
+                               placeholder="Enter first name" />
+
+                        <span asp-validation-for="FirstName"
+                              class="text-danger"></span>
+
+                    </div>
+
+
+                    <!-- Last Name -->
+                    <div class="col-md-6 field-group">
+
+                        <label asp-for="LastName" class="form-label">
+                            Last Name
+                        </label>
+
+                        <input asp-for="LastName"
+                               class="form-control"
+                               placeholder="Enter last name" />
+
+                        <span asp-validation-for="LastName"
+                              class="text-danger"></span>
+
+                    </div>
+
+
+                    <!-- Email -->
+                    <div class="col-md-6 field-group">
+
+                        <label asp-for="Email" class="form-label">
+                            Email Address
+                        </label>
+
+                        <input asp-for="Email"
+                               class="form-control"
+                               placeholder="Enter email address" />
+
+                        <span asp-validation-for="Email"
+                              class="text-danger"></span>
+
+                    </div>
+
+
+                    <!-- Phone -->
+                    <div class="col-md-6 field-group">
+
+                        <label asp-for="Phone" class="form-label">
+                            Phone Number
+                        </label>
+
+                        <input asp-for="Phone"
+                               class="form-control"
+                               placeholder="Enter phone number" />
+
+                        <span asp-validation-for="Phone"
+                              class="text-danger"></span>
+
+                    </div>
+
+
+                    <!-- Date of Birth -->
+                    <div class="col-md-6 field-group">
+
+                        <label asp-for="DateOfBirth" class="form-label">
+                            Date of Birth
+                        </label>
+
+                        <input asp-for="DateOfBirth"
+                               type="date"
+                               class="form-control" />
+
+                        <span asp-validation-for="DateOfBirth"
+                              class="text-danger"></span>
+
+                    </div>
+
+
+                    <!-- Joining Date -->
+                    <div class="col-md-6 field-group">
+
+                        <label asp-for="JoiningDate" class="form-label">
+                            Joining Date
+                        </label>
+
+                        <input asp-for="JoiningDate"
+                               type="date"
+                               class="form-control" />
+
+                        <span asp-validation-for="JoiningDate"
+                              class="text-danger"></span>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Job Information -->
+                <div class="section-title mt-3">
+                    Job Information
+                </div>
+
+                <div class="row">
+
+                    <!-- Designation -->
+                    <div class="col-md-6 field-group">
+
+                        <label asp-for="Designation" class="form-label">
+                            Designation
+                        </label>
+
+                        <input asp-for="Designation"
+                               class="form-control"
+                               placeholder="Enter designation" />
+
+                        <span asp-validation-for="Designation"
+                              class="text-danger"></span>
+
+                    </div>
+
+
+                    <!-- Department -->
+                    <div class="col-md-6 field-group">
+
+                        <label asp-for="DepartmentId" class="form-label">
+                            Department
+                        </label>
+
+                        <select asp-for="DepartmentId"
+                                class="form-select">
+
+                            <option value="">
+                                Select Department
+                            </option>
+
+                            @foreach (var department in ViewBag.Departments)
+                            {
+                                <option value="@department.Id">
+                                    @department.Name
+                                </option>
+                            }
+
+                        </select>
+
+                        <span asp-validation-for="DepartmentId"
+                              class="text-danger"></span>
+
+                    </div>
+
+
+                    <!-- Salary -->
+                    <div class="col-md-6 field-group">
+
+                        <label asp-for="Salary" class="form-label">
+                            Salary
+                        </label>
+
+                        <input asp-for="Salary"
+                               class="form-control"
+                               placeholder="Enter salary" />
+
+                        <span asp-validation-for="Salary"
+                              class="text-danger"></span>
+
+                    </div>
+
+
+                    <!-- Status -->
+                    <div class="col-md-6 field-group">
+
+                        <label asp-for="Status" class="form-label">
+                            Status
+                        </label>
+
+                        <select asp-for="Status"
+                                class="form-select status-select">
+
+                            <option value="">
+                                Select Status
+                            </option>
+
+                            <option value="Active">
+                                Active
+                            </option>
+
+                            <option value="Inactive">
+                                Inactive
+                            </option>
+
+                        </select>
+
+                        <span asp-validation-for="Status"
+                              class="text-danger"></span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Footer Buttons -->
+            <div class="form-footer">
+
+                <a asp-action="Index"
+                   class="btn-back">
+                    ← Back to Employees
+                </a>
+
+                <button type="submit"
+                        class="btn-update">
+                    ✓ Update Employee
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -1,0 +1,334 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>@ViewData["Title"] - Employee Management System</title>
+
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
+
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+
+<body>
+
+    @{
+        bool isAdmin = User.IsInRole("Admin");
+        bool isHR = User.IsInRole("HR");
+        bool isManager = User.IsInRole("Manager");
+        bool isEmployee = User.IsInRole("Employee");
+
+        bool canManageEmployees = isAdmin || isHR || isManager;
+        bool canManageDepartments = isAdmin || isHR;
+        bool canManageAttendance = isAdmin || isHR || isManager || isEmployee;
+        bool canManageLeaves = isAdmin || isHR || isManager || isEmployee;
+        bool canViewSalary = isAdmin || isHR || isEmployee;
+
+        string currentUser = User.Identity?.Name ?? "User";
+
+        string currentRole = "User";
+
+        if (isAdmin)
+            currentRole = "Administrator";
+        else if (isHR)
+            currentRole = "HR";
+        else if (isManager)
+            currentRole = "Manager";
+        else if (isEmployee)
+            currentRole = "Employee";
+
+        string currentController =
+        ViewContext.RouteData.Values["Controller"]?.ToString() ?? "";
+
+        string currentAction =
+        ViewContext.RouteData.Values["Action"]?.ToString() ?? "";
+    }
+
+
+    <div class="ems-wrapper">
+
+        <!-- =====================================================
+             SIDEBAR
+             ===================================================== -->
+        <aside class="ems-sidebar">
+
+            <!-- LOGO -->
+            <div class="sidebar-logo">
+
+                <div class="logo-box">
+                    <i class="bi bi-buildings-fill"></i>
+                </div>
+
+                <div class="logo-content">
+                    <h4>EMS</h4>
+                    <span>Employee Management</span>
+                </div>
+
+            </div>
+
+
+            <!-- SIDEBAR MENU -->
+            <nav class="sidebar-menu">
+
+                <!-- MAIN -->
+                <div class="menu-title">
+                    MAIN MENU
+                </div>
+
+                <a asp-controller="Dashboard"
+                   asp-action="Index"
+                   class="sidebar-link @(currentController == "Dashboard" ? "active" : "")">
+
+                    <i class="bi bi-grid-1x2-fill"></i>
+
+                    <span>Dashboard</span>
+
+                </a>
+
+
+                <!-- EMPLOYEE MANAGEMENT -->
+                @if (canManageEmployees)
+                {
+                    <div class="menu-title">
+                        EMPLOYEE MANAGEMENT
+                    </div>
+
+                    <a asp-controller="Employees"
+                       asp-action="Index"
+                       class="sidebar-link @(currentController == "Employees" && currentAction == "Index" ? "active" : "")">
+
+                        <i class="bi bi-people-fill"></i>
+
+                        <span>All Employees</span>
+
+                    </a>
+
+
+                    @if (isAdmin || isHR)
+                    {
+                        <a asp-controller="Employees"
+                           asp-action="Create"
+                           class="sidebar-link @(currentController == "Employees" && currentAction == "Create" ? "active" : "")">
+
+                            <i class="bi bi-person-plus-fill"></i>
+
+                            <span>Add Employee</span>
+
+                        </a>
+                    }
+                }
+
+
+                <!-- MANAGEMENT -->
+                <div class="menu-title">
+                    MANAGEMENT
+                </div>
+
+
+                @if (canManageDepartments)
+                {
+                    <a asp-controller="Departments"
+                       asp-action="Index"
+                       class="sidebar-link @(currentController == "Departments" ? "active" : "")">
+
+                        <i class="bi bi-building-fill"></i>
+
+                        <span>Departments</span>
+
+                    </a>
+                }
+
+
+                @if (canManageAttendance)
+                {
+                    <a asp-controller="Attendance"
+                       asp-action="Index"
+                       class="sidebar-link @(currentController == "Attendance" ? "active" : "")">
+
+                        <i class="bi bi-clock-history"></i>
+
+                        <span>Attendance</span>
+
+                    </a>
+                }
+
+
+                @if (canManageLeaves)
+                {
+                    <a asp-controller="Leaves"
+                       asp-action="Index"
+                       class="sidebar-link @(currentController == "Leaves" ? "active" : "")">
+
+                        <i class="bi bi-calendar-check-fill"></i>
+
+                        <span>Leave Management</span>
+
+                    </a>
+                }
+
+
+                @if (canViewSalary)
+                {
+                    <a asp-controller="Salaries"
+                       asp-action="Index"
+                       class="sidebar-link @(currentController == "Salaries" ? "active" : "")">
+
+                        <i class="bi bi-cash-stack"></i>
+
+                        <span>Salary Management</span>
+
+                    </a>
+                }
+
+
+                <!-- ADMINISTRATION -->
+                @if (isAdmin)
+                {
+                    <div class="menu-title">
+                        ADMINISTRATION
+                    </div>
+
+                    <a asp-controller="UserRoles"
+                       asp-action="Index"
+                       class="sidebar-link">
+
+                        <i class="bi bi-shield-lock-fill"></i>
+
+                        <span>User & Roles</span>
+
+                    </a>
+                }
+
+            </nav>
+
+
+            <!-- =================================================
+                 SIDEBAR USER
+                 ================================================= -->
+            <div class="sidebar-user">
+
+                <div class="user-avatar">
+                    <i class="bi bi-person-fill"></i>
+                </div>
+
+                <div class="user-details">
+
+                    <strong>@currentRole</strong>
+
+                    <small>@currentUser</small>
+
+                </div>
+
+
+                <form asp-controller="Auth"
+                      asp-action="Logout"
+                      method="post">
+
+                    <button type="submit"
+                            class="logout-btn"
+                            title="Logout">
+
+                        <i class="bi bi-box-arrow-right"></i>
+
+                    </button>
+
+                </form>
+
+            </div>
+
+        </aside>
+
+
+        <!-- =====================================================
+             MAIN AREA
+             ===================================================== -->
+        <div class="ems-main">
+
+
+            <!-- =================================================
+                 TOP HEADER
+                 ================================================= -->
+            <header class="ems-header">
+
+                <div class="header-left">
+
+                    <button type="button"
+                            class="mobile-menu-icon"
+                            aria-label="Open menu">
+
+                        <i class="bi bi-list"></i>
+
+                    </button>
+
+
+                    <div class="header-title">
+
+                        <h5>
+                            Employee Management System
+                        </h5>
+
+                        <small>
+                            Manage your workforce efficiently
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+                <!-- HEADER RIGHT -->
+                <div class="header-user">
+
+                    <div class="header-avatar">
+                        <i class="bi bi-person-fill"></i>
+                    </div>
+
+
+                    <div class="header-user-info">
+
+                        <strong>
+                            @currentRole
+                        </strong>
+
+                        <small>
+                            @currentUser
+                        </small>
+
+                    </div>
+
+
+                    <i class="bi bi-chevron-down header-arrow"></i>
+
+                </div>
+
+            </header>
+
+
+            <!-- =================================================
+                 CONTENT
+                 ================================================= -->
+            <main class="ems-content">
+
+                @RenderBody()
+
+            </main>
+
+        </div>
+
+    </div>
+
+
+    <!-- BOOTSTRAP -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+
+    <!-- PAGE SCRIPTS -->
+    @await RenderSectionAsync("Scripts", required: false)
+
+</body>
+</html>

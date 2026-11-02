@@ -1,0 +1,666 @@
+﻿@{
+    ViewData["Title"] = "Create Account";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8" />
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0" />
+
+    <title>
+        Create Account - Employee Management System
+    </title>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: #f4f7fb;
+            min-height: 100vh;
+        }
+
+        /* ================= MAIN WRAPPER ================= */
+
+        .register-wrapper {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 35px 20px;
+        }
+
+
+        /* ================= CARD ================= */
+
+        .register-card {
+            width: 100%;
+            max-width: 1050px;
+            min-height: 620px;
+            background: #ffffff;
+            border-radius: 22px;
+            overflow: hidden;
+            display: flex;
+            box-shadow: 0 20px 55px rgba(0, 0, 0, 0.10);
+        }
+
+
+        /* ================= LEFT PANEL ================= */
+
+        .register-left {
+            width: 45%;
+            padding: 55px 48px;
+            background: linear-gradient(135deg, #0d6efd, #084298);
+            color: white;
+
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+
+        /* ================= LOGO ================= */
+
+        .ems-logo {
+            width: 64px;
+            height: 64px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.20);
+
+            border-radius: 16px;
+
+            font-size: 30px;
+
+            margin-bottom: 25px;
+        }
+
+
+        /* ================= LEFT TEXT ================= */
+
+        .register-left h1 {
+            font-size: 34px;
+            line-height: 1.25;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .register-left p {
+            color: rgba(255,255,255,0.85);
+            font-size: 15px;
+            line-height: 1.7;
+            margin-bottom: 30px;
+        }
+
+
+        /* ================= FEATURES ================= */
+
+        .feature {
+            display: flex;
+            align-items: center;
+
+            gap: 12px;
+
+            margin-bottom: 18px;
+
+            font-size: 15px;
+        }
+
+        .feature i {
+            font-size: 18px;
+        }
+
+
+        /* ================= RIGHT PANEL ================= */
+
+        .register-right {
+            width: 55%;
+            padding: 55px 60px;
+
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+
+        .register-right h2 {
+            font-size: 30px;
+            font-weight: 700;
+
+            color: #172033;
+
+            margin-bottom: 8px;
+        }
+
+
+        .register-subtitle {
+            color: #7b8494;
+
+            margin-bottom: 30px;
+
+            font-size: 15px;
+        }
+
+
+        /* ================= FORM ================= */
+
+        .form-label {
+            font-weight: 600;
+            color: #344054;
+
+            margin-bottom: 8px;
+        }
+
+
+        .input-group {
+            border-radius: 8px;
+        }
+
+
+        .input-group-text {
+            background: #ffffff;
+
+            border-right: 0;
+
+            color: #667085;
+
+            min-width: 48px;
+
+            justify-content: center;
+        }
+
+
+        .form-control {
+            height: 50px;
+
+            border-left: 0;
+
+            box-shadow: none !important;
+
+            font-size: 14px;
+        }
+
+
+        .form-control::placeholder {
+            color: #98a2b3;
+        }
+
+
+        .input-group:focus-within {
+            box-shadow: 0 0 0 3px rgba(13,110,253,0.10);
+
+            border-radius: 8px;
+        }
+
+
+        .input-group:focus-within
+        .input-group-text,
+
+        .input-group:focus-within
+        .form-control {
+            border-color: #86b7fe;
+        }
+
+
+        /* ================= PASSWORD TEXT ================= */
+
+        .password-help {
+            font-size: 12px;
+            color: #7b8494;
+
+            margin-top: 6px;
+        }
+
+
+        /* ================= BUTTON ================= */
+
+        .create-btn {
+            height: 52px;
+
+            border-radius: 9px;
+
+            font-size: 16px;
+
+            font-weight: 600;
+
+            margin-top: 8px;
+
+            transition: 0.2s ease;
+        }
+
+
+        .create-btn:hover {
+            transform: translateY(-1px);
+        }
+
+
+        /* ================= LOGIN LINK ================= */
+
+        .login-link {
+            text-align: center;
+
+            margin-top: 25px;
+
+            color: #667085;
+
+            font-size: 14px;
+        }
+
+
+        .login-link a {
+            color: #0d6efd;
+
+            text-decoration: none;
+
+            font-weight: 600;
+        }
+
+
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+
+
+        /* ================= ERROR ================= */
+
+        .validation-summary {
+            font-size: 14px;
+
+            border-radius: 8px;
+
+            margin-bottom: 20px;
+        }
+
+
+        /* ================= RESPONSIVE ================= */
+
+        @@media (max-width: 768px) {
+
+            .register-wrapper {
+                padding: 20px;
+            }
+
+            .register-card {
+                flex-direction: column;
+            }
+
+            .register-left,
+            .register-right {
+                width: 100%;
+            }
+
+            .register-left {
+                padding: 40px 30px;
+            }
+
+            .register-left h1 {
+                font-size: 28px;
+            }
+
+            .register-right {
+                padding: 40px 30px;
+            }
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <div class="register-wrapper">
+
+
+        <div class="register-card">
+
+
+            <!-- ================================================= -->
+            <!-- LEFT PANEL -->
+            <!-- ================================================= -->
+
+            <div class="register-left">
+
+
+                <!-- Logo -->
+
+                <div class="ems-logo">
+
+                    <i class="bi bi-people-fill"></i>
+
+                </div>
+
+
+                <!-- Heading -->
+
+                <h1>
+                    Employee Management System
+                </h1>
+
+
+                <!-- Description -->
+
+                <p>
+
+                    Manage employees, departments, attendance,
+                    leaves and salaries through a simple and
+                    professional management system.
+
+                </p>
+
+
+                <!-- Feature 1 -->
+
+                <div class="feature">
+
+                    <i class="bi bi-check-circle-fill"></i>
+
+                    <span>
+                        Easy employee management
+                    </span>
+
+                </div>
+
+
+                <!-- Feature 2 -->
+
+                <div class="feature">
+
+                    <i class="bi bi-check-circle-fill"></i>
+
+                    <span>
+                        Attendance & leave management
+                    </span>
+
+                </div>
+
+
+                <!-- Feature 3 -->
+
+                <div class="feature">
+
+                    <i class="bi bi-check-circle-fill"></i>
+
+                    <span>
+                        Salary management
+                    </span>
+
+                </div>
+
+
+                <!-- Feature 4 -->
+
+                <div class="feature">
+
+                    <i class="bi bi-check-circle-fill"></i>
+
+                    <span>
+                        Secure account authentication
+                    </span>
+
+                </div>
+
+
+            </div>
+
+
+            <!-- ================================================= -->
+            <!-- RIGHT PANEL -->
+            <!-- ================================================= -->
+
+            <div class="register-right">
+
+
+                <h2>
+                    Create Account
+                </h2>
+
+
+                <p class="register-subtitle">
+
+                    Create your account to access the
+                    EMS dashboard.
+
+                </p>
+
+
+                <!-- ================================================= -->
+                <!-- REGISTRATION FORM -->
+                <!-- ================================================= -->
+
+                <form asp-controller="Auth"
+                      asp-action="Registration"
+                      method="post">
+
+
+                    @Html.AntiForgeryToken()
+
+
+                    <!-- ERROR MESSAGE -->
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="alert alert-danger validation-summary">
+
+                            @foreach (var error in ViewData.ModelState.Values
+                           .SelectMany(v => v.Errors))
+                            {
+                                <div>
+
+                                    <i class="bi bi-exclamation-circle me-2"></i>
+
+                                    @error.ErrorMessage
+
+                                </div>
+                            }
+
+                        </div>
+                    }
+
+
+                    <!-- ================================================= -->
+                    <!-- EMAIL -->
+                    <!-- ================================================= -->
+
+                    <div class="mb-3">
+
+
+                        <label for="email"
+                               class="form-label">
+
+                            Email Address
+
+                        </label>
+
+
+                        <div class="input-group">
+
+
+                            <span class="input-group-text">
+
+                                <i class="bi bi-envelope"></i>
+
+                            </span>
+
+
+                            <input id="email"
+                                   name="email"
+                                   type="email"
+                                   class="form-control"
+                                   autocomplete="username"
+                                   placeholder="Enter your email address"
+                                   required />
+
+
+                        </div>
+
+
+                    </div>
+
+
+                    <!-- ================================================= -->
+                    <!-- PASSWORD -->
+                    <!-- ================================================= -->
+
+                    <div class="mb-3">
+
+
+                        <label for="password"
+                               class="form-label">
+
+                            Password
+
+                        </label>
+
+
+                        <div class="input-group">
+
+
+                            <span class="input-group-text">
+
+                                <i class="bi bi-lock"></i>
+
+                            </span>
+
+
+                            <input id="password"
+                                   name="password"
+                                   type="password"
+                                   class="form-control"
+                                   autocomplete="new-password"
+                                   placeholder="Enter your password"
+                                   minlength="6"
+                                   required />
+
+
+                        </div>
+
+
+                        <div class="password-help">
+
+                            Password must contain at least 6 characters,
+                            including uppercase, lowercase and a number.
+
+                        </div>
+
+
+                    </div>
+
+
+                    <!-- ================================================= -->
+                    <!-- CONFIRM PASSWORD -->
+                    <!-- ================================================= -->
+
+                    <div class="mb-4">
+
+
+                        <label for="confirmPassword"
+                               class="form-label">
+
+                            Confirm Password
+
+                        </label>
+
+
+                        <div class="input-group">
+
+
+                            <span class="input-group-text">
+
+                                <i class="bi bi-shield-lock"></i>
+
+                            </span>
+
+
+                            <input id="confirmPassword"
+                                   name="confirmPassword"
+                                   type="password"
+                                   class="form-control"
+                                   autocomplete="new-password"
+                                   placeholder="Confirm your password"
+                                   minlength="6"
+                                   required />
+
+
+                        </div>
+
+
+                    </div>
+
+
+                    <!-- ================================================= -->
+                    <!-- CREATE ACCOUNT BUTTON -->
+                    <!-- ================================================= -->
+
+                    <button type="submit"
+                            class="btn btn-primary w-100 create-btn">
+
+                        Create Account
+
+                        <i class="bi bi-arrow-right ms-2"></i>
+
+                    </button>
+
+
+                    <!-- ================================================= -->
+                    <!-- LOGIN LINK -->
+                    <!-- ================================================= -->
+
+                    <div class="login-link">
+
+                        Already have an account?
+
+                        <a asp-controller="Auth"
+                           asp-action="Login">
+
+                            Sign in
+
+                        </a>
+
+                    </div>
+
+
+                </form>
+
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+    <!-- Bootstrap JS -->
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">
+    </script>
+
+
+</body>
+
+</html>
+    

@@ -1,0 +1,990 @@
+﻿@model IEnumerable<EmployeeManagementSystem.Models.Employee>
+
+@{
+    ViewData["Title"] = "Employees";
+}
+
+<style>
+    body {
+        background: #f5f7fb;
+    }
+
+    .employee-page {
+        padding: 10px 5px 30px;
+    }
+
+    /* =====================================================
+           PAGE HEADER
+           ===================================================== */
+
+    .page-title {
+        font-size: 28px;
+        font-weight: 700;
+        color: #1f2937;
+        margin-bottom: 5px;
+    }
+
+    .page-subtitle {
+        color: #6b7280;
+        font-size: 14px;
+    }
+
+    .btn-add {
+        background: #2563eb;
+        color: white;
+        border: none;
+        padding: 10px 18px;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: 0.2s;
+    }
+
+        .btn-add:hover {
+            background: #1d4ed8;
+            color: white;
+            transform: translateY(-1px);
+        }
+
+    /* =====================================================
+           SEARCH & FILTER
+           ===================================================== */
+
+    .filter-card {
+        background: white;
+        border: none;
+        border-radius: 12px;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    }
+
+    .filter-title {
+        font-size: 16px;
+        font-weight: 700;
+        color: #374151;
+    }
+
+    .form-label {
+        font-size: 13px;
+        color: #4b5563;
+        margin-bottom: 6px;
+    }
+
+    .form-control,
+    .form-select {
+        border: 1px solid #dbe1ea;
+        border-radius: 8px;
+        padding: 10px 12px;
+        font-size: 14px;
+        box-shadow: none;
+    }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.10);
+        }
+
+    .btn-search {
+        background: #2563eb;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 10px 17px;
+        font-weight: 600;
+    }
+
+        .btn-search:hover {
+            background: #1d4ed8;
+            color: white;
+        }
+
+    .btn-clear {
+        background: #f3f4f6;
+        color: #374151;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        padding: 9px 16px;
+        font-weight: 600;
+    }
+
+        .btn-clear:hover {
+            background: #e5e7eb;
+        }
+
+    /* =====================================================
+           TABLE
+           ===================================================== */
+
+    .table-card {
+        background: white;
+        border: none;
+        border-radius: 12px;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+        overflow: hidden;
+    }
+
+    .table-header {
+        padding: 20px 22px;
+        border-bottom: 1px solid #eef0f4;
+    }
+
+    .table-title {
+        font-size: 17px;
+        font-weight: 700;
+        color: #1f2937;
+        margin: 0;
+    }
+
+    .table-subtitle {
+        color: #9ca3af;
+        font-size: 13px;
+        margin-top: 4px;
+    }
+
+    .employee-table {
+        margin-bottom: 0;
+    }
+
+        .employee-table thead th {
+            background: #f8fafc;
+            color: #6b7280;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            padding: 14px 16px;
+            border-bottom: 1px solid #e5e7eb;
+            white-space: nowrap;
+        }
+
+        .employee-table tbody td {
+            padding: 16px;
+            color: #374151;
+            font-size: 14px;
+            border-bottom: 1px solid #f0f2f5;
+            vertical-align: middle;
+        }
+
+        .employee-table tbody tr {
+            transition: 0.2s;
+        }
+
+            .employee-table tbody tr:hover {
+                background: #f8fbff;
+            }
+
+    .serial-number {
+        font-weight: 700;
+        color: #2563eb;
+    }
+
+    .employee-name {
+        font-weight: 600;
+        color: #111827;
+    }
+
+    .employee-email {
+        color: #6b7280;
+    }
+
+    /* =====================================================
+           STATUS
+           ===================================================== */
+
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .status-active {
+        background: #ecfdf3;
+        color: #15803d;
+    }
+
+    .status-inactive {
+        background: #f3f4f6;
+        color: #6b7280;
+    }
+
+    .status-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: currentColor;
+    }
+
+    /* =====================================================
+           ACTION BUTTONS
+           ===================================================== */
+
+    .action-buttons {
+        display: flex;
+        gap: 5px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .action-btn {
+        border-radius: 7px;
+        padding: 6px 10px;
+        font-size: 12px;
+        font-weight: 600;
+        text-decoration: none;
+        border: none;
+        transition: 0.2s;
+    }
+
+    .btn-details {
+        background: #e0f2fe;
+        color: #0369a1;
+    }
+
+        .btn-details:hover {
+            background: #bae6fd;
+            color: #0369a1;
+        }
+
+    .btn-edit {
+        background: #fef3c7;
+        color: #b45309;
+    }
+
+        .btn-edit:hover {
+            background: #fde68a;
+            color: #92400e;
+        }
+
+    .btn-delete {
+        background: #fee2e2;
+        color: #dc2626;
+    }
+
+        .btn-delete:hover {
+            background: #fecaca;
+            color: #b91c1c;
+        }
+
+    .btn-deactivate {
+        background: #f3f4f6;
+        color: #4b5563;
+    }
+
+        .btn-deactivate:hover {
+            background: #e5e7eb;
+            color: #111827;
+        }
+
+    /* =====================================================
+           PAGINATION
+           ===================================================== */
+
+    .employee-pagination {
+        padding: 18px 22px;
+        border-top: 1px solid #eef0f4;
+        background: white;
+    }
+
+        .employee-pagination .pagination {
+            margin-bottom: 0;
+        }
+
+        .employee-pagination .page-link {
+            color: #2563eb;
+            border-color: #e5e7eb;
+            border-radius: 7px;
+            margin: 0 2px;
+            font-size: 13px;
+            font-weight: 600;
+            padding: 7px 11px;
+        }
+
+            .employee-pagination .page-link:hover {
+                background: #eff6ff;
+                color: #1d4ed8;
+            }
+
+        .employee-pagination .page-item.active .page-link {
+            background: #2563eb;
+            border-color: #2563eb;
+            color: white;
+        }
+
+        .employee-pagination .page-item.disabled .page-link {
+            color: #9ca3af;
+            background: #f9fafb;
+        }
+
+    .empty-state {
+        padding: 45px 20px !important;
+        text-align: center;
+        color: #9ca3af !important;
+    }
+
+    /* =====================================================
+           RESPONSIVE
+           ===================================================== */
+
+    @@media (max-width: 768px) {
+
+        .page-title {
+            font-size: 23px;
+        }
+
+        .page-header {
+            flex-direction: column;
+            align-items: flex-start !important;
+            gap: 15px;
+        }
+
+        .btn-add {
+            width: 100%;
+        }
+
+        .action-buttons {
+            justify-content: flex-start;
+        }
+
+        .employee-pagination {
+            flex-direction: column;
+            gap: 15px;
+            align-items: center !important;
+        }
+    }
+
+
+    /* =====================================================
+       ACCOUNT CREDENTIALS
+       ===================================================== */
+
+    .account-created-card {
+        background: #ffffff;
+        border: 1px solid #bbf7d0;
+        border-left: 5px solid #16a34a;
+        border-radius: 12px;
+        padding: 18px 22px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    .account-created-title {
+        color: #15803d;
+        font-size: 17px;
+        font-weight: 700;
+        margin-bottom: 12px;
+    }
+
+    .account-created-info {
+        display: flex;
+        gap: 30px;
+        flex-wrap: wrap;
+    }
+
+    .credential-item {
+        font-size: 14px;
+        color: #4b5563;
+    }
+
+        .credential-item strong {
+            color: #111827;
+        }
+
+    .credential-password {
+        background: #f3f4f6;
+        padding: 5px 9px;
+        border-radius: 6px;
+        font-family: monospace;
+        font-weight: 600;
+        color: #111827;
+    }
+
+    .account-note {
+        margin-top: 12px;
+        font-size: 12px;
+        color: #6b7280;
+    }
+
+    .deactivate-btn {
+        color: #64748b;
+        border: 1px solid #cbd5e1;
+        background: #ffffff;
+    }
+
+        .deactivate-btn:hover {
+            background: #f1f5f9;
+            color: #dc2626;
+            border-color: #fecaca;
+        }
+
+    .activate-btn {
+        color: #16a34a;
+        border: 1px solid #bbf7d0;
+        background: #f0fdf4;
+    }
+
+        .activate-btn:hover {
+            background: #dcfce7;
+            color: #15803d;
+            border-color: #86efac;
+        }
+
+</style>
+
+
+<div class="container-fluid employee-page">
+
+    <!-- =====================================================
+         PAGE HEADER
+         ===================================================== -->
+
+    <div class="d-flex justify-content-between align-items-center page-header mb-4">
+
+        <div>
+
+            <h2 class="page-title">
+                Employee Management
+            </h2>
+
+            <p class="page-subtitle mb-0">
+                Manage and monitor your company employees
+            </p>
+
+        </div>
+
+        <a asp-action="Create" class="btn btn-add">
+            + Add Employee
+        </a>
+
+    </div>
+
+
+    @if (TempData["LoginEmail"] != null &&
+    TempData["TemporaryPassword"] != null)
+    {
+        <div class="account-created-card">
+
+            <div class="account-created-title">
+                <i class="bi bi-check-circle-fill"></i>
+                Employee Account Created Successfully
+            </div>
+
+            <div class="account-created-info">
+
+                <div class="credential-item">
+                    <strong>Login Email:</strong>
+                    @TempData["LoginEmail"]
+                </div>
+
+                <div class="credential-item">
+                    <strong>Temporary Password:</strong>
+
+                    <span class="credential-password">
+                        @TempData["TemporaryPassword"]
+                    </span>
+                </div>
+
+            </div>
+
+            <div class="account-note">
+                Please share these temporary login credentials with the employee.
+            </div>
+
+        </div>
+    }
+
+    <!-- =====================================================
+         SEARCH & FILTER
+         ===================================================== -->
+
+    <div class="card filter-card mb-4">
+
+        <div class="card-body p-4">
+
+            <div class="filter-title mb-3">
+                Search & Filter Employees
+            </div>
+
+            <form asp-action="Index" method="get">
+
+                <div class="row g-3 align-items-end">
+
+                    <!-- Search -->
+
+                    <div class="col-md-5">
+
+                        <label class="form-label">
+                            Search Employee
+                        </label>
+
+                        <input type="text"
+                               name="searchString"
+                               value="@ViewBag.SearchString"
+                               class="form-control"
+                               placeholder="Name, Email or Employee ID" />
+
+                    </div>
+
+
+                    <!-- Department -->
+
+                    <div class="col-md-3">
+
+                        <label class="form-label">
+                            Department
+                        </label>
+
+                        <select name="departmentId" class="form-select">
+
+                            <option value="">
+                                All Departments
+                            </option>
+
+                            @if (ViewBag.Departments != null)
+                            {
+                                foreach (var department in ViewBag.Departments)
+                                {
+                                    <option value="@department.Id"
+                                            selected="@(ViewBag.DepartmentId == department.Id ? "selected" : null)">
+                                        @department.Name
+                                    </option>
+                                }
+                            }
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- Status -->
+
+                    <div class="col-md-2">
+
+                        <label class="form-label">
+                            Status
+                        </label>
+
+                        <select name="status" class="form-select">
+
+                            <option value="">
+                                All Status
+                            </option>
+
+                            <option value="Active"
+                                    selected="@(ViewBag.Status == "Active" ? "selected" : null)">
+                                Active
+                            </option>
+
+                            <option value="Inactive"
+                                    selected="@(ViewBag.Status == "Inactive" ? "selected" : null)">
+                                Inactive
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- Buttons -->
+
+                    <div class="col-md-2 d-flex gap-2">
+
+                        <button type="submit"
+                                class="btn btn-search">
+                            Search
+                        </button>
+
+                        <a asp-action="Index"
+                           class="btn btn-clear">
+                            Clear
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         EMPLOYEE TABLE
+         ===================================================== -->
+
+    <div class="table-card">
+
+        <!-- Table Header -->
+
+        <div class="table-header">
+
+            <h5 class="table-title">
+                Employee List
+            </h5>
+
+            <div class="table-subtitle">
+                View and manage all registered employees
+            </div>
+
+        </div>
+
+
+        <!-- Table -->
+
+        <div class="table-responsive">
+
+            <table class="table employee-table align-middle">
+
+                <thead>
+
+                    <tr>
+
+                        <th>ID</th>
+
+                        <th>
+                            Employee Name
+                        </th>
+
+                        <th>
+                            Email
+                        </th>
+
+                        <th>
+                            Phone
+                        </th>
+
+                        <th>
+                            Department
+                        </th>
+
+                        <th>
+                            Designation
+                        </th>
+
+                        <th>
+                            Salary
+                        </th>
+
+                        <th>
+                            Status
+                        </th>
+
+                        <th class="text-center">
+                            Actions
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    @if (Model != null && Model.Any())
+                    {
+                        int serialNo = ((ViewBag.CurrentPage - 1) * 10);
+
+                        foreach (var employee in Model)
+                        {
+                            <tr>
+
+                                <!-- ID -->
+
+                                <td>
+
+                                    <span class="serial-number">
+                                        @(++serialNo)
+                                    </span>
+
+                                </td>
+
+
+                                <!-- Employee Name -->
+
+                                <td>
+
+                                    <span class="employee-name">
+                                        @employee.FirstName @employee.LastName
+                                    </span>
+
+                                </td>
+
+
+                                <!-- Email -->
+
+                                <td>
+
+                                    <span class="employee-email">
+                                        @employee.Email
+                                    </span>
+
+                                </td>
+
+
+                                <!-- Phone -->
+
+                                <td>
+                                    @employee.Phone
+                                </td>
+
+
+                                <!-- Department -->
+
+                                <td>
+
+                                    @if (employee.Department != null)
+                                    {
+                                        @employee.Department.Name
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">
+                                            Not Assigned
+                                        </span>
+                                    }
+
+                                </td>
+
+
+                                <!-- Designation -->
+
+                                <td>
+                                    @employee.Designation
+                                </td>
+
+
+                                <!-- Salary -->
+
+                                <td>
+                                    ₹@employee.Salary.ToString("N2")
+                                </td>
+
+
+                                <!-- Status -->
+
+                                <td>
+
+                                    @if (employee.Status == "Active")
+                                    {
+                                        <span class="status-badge status-active">
+
+                                            <span class="status-dot"></span>
+
+                                            Active
+
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="status-badge status-inactive">
+
+                                            <span class="status-dot"></span>
+
+                                            Inactive
+
+                                        </span>
+                                    }
+
+                                </td>
+
+
+                                <!-- Actions -->
+                                <td>
+                                    <div class="action-buttons">
+
+                                        <!-- Details -->
+                                        <a asp-action="Details"
+                                           asp-route-id="@employee.Id"
+                                           class="action-icon-btn details-icon"
+                                           title="View Details">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+
+                                        <!-- Edit -->
+                                        <a asp-action="Edit"
+                                           asp-route-id="@employee.Id"
+                                           class="action-icon-btn edit-icon"
+                                           title="Edit Employee">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+
+                                        <!-- Delete -->
+                                        <a asp-action="Delete"
+                                           asp-route-id="@employee.Id"
+                                           class="action-icon-btn delete-icon"
+                                           title="Delete Employee"
+                                           onclick="return confirm('Are you sure you want to delete this employee?');">
+                                            <i class="bi bi-trash3"></i>
+                                        </a>
+
+                                        @if (employee.Status == "Active")
+                                        {
+                                            <form asp-action="Deactivate"
+                                                  method="post"
+                                                  class="d-inline">
+
+                                                <input type="hidden" name="id" value="@employee.Id" />
+
+                                                @Html.AntiForgeryToken()
+
+                                                <button type="submit"
+                                                        class="action-btn deactivate-btn"
+                                                        title="Deactivate Employee"
+                                                        onclick="return confirm('Are you sure you want to deactivate this employee?');">
+                                                    <i class="bi bi-power"></i>
+                                                </button>
+
+                                            </form>
+                                        }
+                                        else
+                                        {
+                                            <form asp-action="Activate"
+                                                  method="post"
+                                                  class="d-inline">
+
+                                                <input type="hidden" name="id" value="@employee.Id" />
+
+                                                @Html.AntiForgeryToken()
+
+                                                <button type="submit"
+                                                        class="action-btn activate-btn"
+                                                        title="Activate Employee"
+                                                        onclick="return confirm('Are you sure you want to activate this employee?');">
+                                                    <i class="bi bi-power"></i>
+                                                </button>
+
+                                            </form>
+                                        }
+
+                                    </div>
+                                </td>
+                                
+
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+
+                            <td colspan="9" class="empty-state">
+
+                                No employees found.
+
+                            </td>
+
+                        </tr>
+                    }
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        <!-- =================================================
+             PAGINATION
+             ================================================= -->
+        @if (ViewBag.TotalPages > 1)
+        {
+            <div class="employee-pagination d-flex justify-content-between align-items-center">
+
+                <div class="text-muted small">
+
+                    Showing page
+
+                    <strong>
+                        @ViewBag.CurrentPage
+                    </strong>
+
+                    of
+
+                    <strong>
+                        @ViewBag.TotalPages
+                    </strong>
+
+                    <span class="ms-2">
+                        (@ViewBag.TotalRecords total employees)
+                    </span>
+
+                </div>
+
+
+                <nav aria-label="Employee Pagination">
+
+                    <ul class="pagination">
+
+                        <!-- Previous -->
+
+                        <li class="page-item @(ViewBag.CurrentPage == 1 ? "disabled" : "")">
+
+                            <a class="page-link"
+                               asp-action="Index"
+                               asp-route-searchString="@ViewBag.SearchString"
+                               asp-route-status="@ViewBag.Status"
+                               asp-route-departmentId="@ViewBag.DepartmentId"
+                               asp-route-page="@(ViewBag.CurrentPage - 1)">
+
+                                <i class="bi bi-chevron-left"></i>
+
+                                Previous
+
+                            </a>
+
+                        </li>
+
+
+                        <!-- Page Numbers -->
+                        @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                        {
+                            <li class="page-item @(ViewBag.CurrentPage == i ? "active" : "")">
+
+                                <a class="page-link"
+                                   asp-action="Index"
+                                   asp-route-searchString="@ViewBag.SearchString"
+                                   asp-route-status="@ViewBag.Status"
+                                   asp-route-departmentId="@ViewBag.DepartmentId"
+                                   asp-route-page="@i">
+
+                                    @i
+
+                                </a>
+
+                            </li>
+                        }
+
+
+                        <!-- Next -->
+
+                        <li class="page-item @(ViewBag.CurrentPage == ViewBag.TotalPages ? "disabled" : "")">
+
+                            <a class="page-link"
+                               asp-action="Index"
+                               asp-route-searchString="@ViewBag.SearchString"
+                               asp-route-status="@ViewBag.Status"
+                               asp-route-departmentId="@ViewBag.DepartmentId"
+                               asp-route-page="@(ViewBag.CurrentPage + 1)">
+
+                                Next
+
+                                <i class="bi bi-chevron-right"></i>
+
+                            </a>
+
+                        </li>
+
+                    </ul>
+
+                </nav>
+
+            </div>
+        }
+
+    </div>
+
+</div>
